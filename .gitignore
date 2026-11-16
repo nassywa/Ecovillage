@@ -1,0 +1,10 @@
+config/database.php
+.env
+.vscode/
+.idea/
+.claude/
+.cursor/
+CLAUDE.md
+AGENTS.md
+Thumbs.db
+.DS_Stores
