@@ -1,0 +1,53 @@
+/* Warna dasar halaman */
+
+:root {
+  color-scheme: light;
+  --bg: #FFFFFF;
+  --surface: #F4F9F5;
+  --surface-2: #E8F5EC;
+  --text: #10261A;
+  --text-muted: #4B6355;
+  --primary: #16803C;
+  --primary-hover: #126B32;
+  --on-primary: #FFFFFF;
+  --border: #DCE8E0;
+  --accent-lapor: #F59E0B;
+  --on-accent-lapor: #3B2300;
+  --danger: #B42318;
+}
+
+/* Gelap: dipilih manual */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0A1410;
+  --surface: #112019;
+  --surface-2: #172A21;
+  --text: #E9F4EC;
+  --text-muted: #9DB5A6;
+  --primary: #3DD17A;
+  --primary-hover: #5BE08F;
+  --on-primary: #052E16;
+  --border: #223A2D;
+  --accent-lapor: #FBBF24;
+  --on-accent-lapor: #2B1A00;
+  --danger: #F97066;
+}
+
+/* Gelap: otomatis mengikuti perangkat, kecuali pengguna memilih terang */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0A1410;
+    --surface: #112019;
+    --surface-2: #172A21;
+    --text: #E9F4EC;
+    --text-muted: #9DB5A6;
+    --primary: #3DD17A;
+    --primary-hover: #5BE08F;
+    --on-primary: #052E16;
+    --border: #223A2D;
+    --accent-lapor: #FBBF24;
+    --on-accent-lapor: #2B1A00;
+    --danger: #F97066;
+  }
+}
