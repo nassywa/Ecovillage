@@ -8,3 +8,16 @@ CLAUDE.md
 AGENTS.md
 Thumbs.db
 .DS_Stores
+# AI Agent
+.agents/
+.codex/
+GEMINI.md
+
+# Temporary testing files
+test_connection.php
+app/check_upload_folder.php
+public/test_*.html
+
+# Uploaded files (keep folder structure)
+uploads/*
+!uploads/.gitkeep
