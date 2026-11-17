@@ -1,0 +1,98 @@
+/* berisi aturan umum: ukuran teks, judul, tombol, kartu. */
+
+/* padding dan border ikut dihitung dalam lebar elemen, supaya ukuran lebih mudah diprediksi. */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* gulir halus saat klik tautan ke bagian lain di halaman. */
+html { scroll-behavior: smooth; }
+
+
+/* teks dan judul  */
+body {
+  margin: 0;
+  /* font sementara. */
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* clamp(min, ideal, max): ukuran teks menyesuaikan lebar layar, antara 16 px sampai 18 px. */
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+  /* angka selebar sama, supaya statistik rapi sejajar. */
+  font-variant-numeric: tabular-nums;
+}
+
+h1, h2, h3 {
+  font-family: system-ui, "Segoe UI", sans-serif; /* font judul menyusul */
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 0.5em;
+}
+/* judul fluida: mengecil di HP, membesar di layar lebar. */
+h1 { font-size: clamp(2.5rem, 1.5rem + 4vw, 4.5rem); }   /* sekitar 40-72 px */
+h2 { font-size: clamp(1.75rem, 1.2rem + 2vw, 2.75rem); } /* sekitar 28-44 px */
+
+/* batasi lebar paragraf agar nyaman dibaca. */
+p { max-width: 68ch; }
+
+a { color: var(--primary); }
+
+
+/* muncul saat pengguna menavigasi dengan keyboard (Tab), supaya jelas elemen mana yang sedang dipilih. */
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+
+/* tata letak */
+
+/* pembungkus isi halaman: lebar maksimal 1120 px, rata tengah, dengan sisa 1 rem di kiri-kanan pada layar kecil. */
+.container {
+  width: min(1120px, 100% - 2rem);
+  margin-inline: auto;
+}
+
+
+/* sudut membulat 24 px dan bayangan smooth. */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.06);
+}
+
+
+/* tombol bentuk pil */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--primary);
+  color: var(--on-primary);
+  text-decoration: none;
+  /* animasi hanya pada transform dan warna latar. */
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1), background-color 200ms;
+}
+.btn:hover { background: var(--primary-hover); }
+/* Efek tekan: tombol mengecil sedikit saat diklik. */
+.btn:active { transform: scale(0.97); }
+
+/* varian khusus tombol LaporDesa (kuning-oranye). */
+.btn-lapor {
+  background: var(--accent-lapor);
+  color: var(--on-accent-lapor);
+}
+
+
+/* aksesibilitas bagi pengguna yang mengaktifkan "kurangi gerakan" di
+   perangkatnya, semua animasi dan transisi dimatikan. */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
