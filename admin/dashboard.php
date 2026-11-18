@@ -133,10 +133,10 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
             <p>Tambah, edit, dan hapus foto dokumentasi kegiatan desa.</p>
         </a>
 
-        <a href="village_contact.php" class="menu-card">
-            <h2>Kontak Desa</h2>
-            <p>Kelola nomor telepon, email, alamat, dan media sosial desa.</p>
-        </a>
+        <a href="reports.php" class="menu-card">
+    <h2>Laporan Warga</h2>
+    <p>Lihat laporan warga, periksa detail, dan perbarui status penanganannya.</p>
+</a>
 
     </section>
 

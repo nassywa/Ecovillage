@@ -86,13 +86,17 @@ try {
 
     $oldStatus = $report['status'];
 
-    // Perbarui status laporan
+    // Perbarui status dan catatan admin
     $updateStmt = $pdo->prepare(
-        "UPDATE reports SET status = :status WHERE id = :id"
+        "UPDATE reports
+         SET status = :status,
+             admin_note = :admin_note
+         WHERE id = :id"
     );
 
     $updateStmt->execute([
         ':status' => $newStatus,
+        ':admin_note' => $note !== '' ? $note : null,
         ':id' => $reportId
     ]);
 
@@ -114,7 +118,7 @@ try {
 
     echo json_encode([
         'success' => true,
-        'message' => 'Status laporan berhasil diperbarui.',
+        'message' => 'Status dan catatan laporan berhasil diperbarui.',
         'old_status' => $oldStatus,
         'new_status' => $newStatus
     ]);
