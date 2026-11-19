@@ -2,7 +2,6 @@
 (function () {
     const root = document.documentElement;
     const STORAGE_KEY = "ecovillage-theme";
-
     const themeButton = document.querySelector(".theme-toggle");
 
     // Mengambil tema yang pernah dipilih pengguna
@@ -14,13 +13,25 @@
         }
     }
 
+    // Menentukan tema yang sedang aktif
+    function getCurrentTheme() {
+        const savedTheme = root.getAttribute("data-theme");
+
+        if (savedTheme === "light" || savedTheme === "dark") {
+            return savedTheme;
+        }
+
+        // Jika belum ada pilihan, ikuti tema perangkat
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+    }
+
     // Memperbarui tampilan tombol tema
     function updateThemeButton() {
         if (!themeButton) return;
 
-        const currentTheme = root.getAttribute("data-theme");
-
-        const isDark = currentTheme === "dark";
+        const isDark = getCurrentTheme() === "dark";
 
         themeButton.textContent = isDark ? "☀" : "☾";
 
@@ -56,7 +67,6 @@
     if (savedTheme === "light" || savedTheme === "dark") {
         setTheme(savedTheme, false);
     } else {
-        // Jika belum ada pilihan, ikuti pengaturan perangkat
         root.removeAttribute("data-theme");
         updateThemeButton();
     }
@@ -64,12 +74,11 @@
     // Menjalankan pergantian tema ketika tombol ditekan
     if (themeButton) {
         themeButton.addEventListener("click", function () {
-            const currentTheme = getComputedStyle(root)
-                .getPropertyValue("color-scheme")
-                .trim();
+            const currentTheme = getCurrentTheme();
 
-            const nextTheme =
-                currentTheme === "dark" ? "light" : "dark";
+            const nextTheme = currentTheme === "dark"
+                ? "light"
+                : "dark";
 
             setTheme(nextTheme);
         });

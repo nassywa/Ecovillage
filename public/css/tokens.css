@@ -1,5 +1,5 @@
+/* memberi tahu browser bahwa halaman ini terang, supaya scrollbar dan kolom isian ikut tampil terang. */
 :root {
-  /* memberi tahu browser bahwa halaman ini terang, supaya scrollbar dan kolom isian ikut tampil terang. */
   color-scheme: light;
 
   /* warna latar */

@@ -37,9 +37,23 @@
         });
     });
 
-    // Menutup menu dengan tombol Escape
+    // Menutup menu ketika pengguna menekan Escape
     document.addEventListener("keydown", function (event) {
         if (event.key === "Escape") {
+            setMenu(false);
+            toggle.focus();
+        }
+    });
+
+    // Menutup menu ketika pengguna mengklik area di luar navigasi
+    document.addEventListener("click", function (event) {
+        const isOpen = nav.getAttribute("data-open") === "true";
+
+        if (
+            isOpen &&
+            !nav.contains(event.target) &&
+            !toggle.contains(event.target)
+        ) {
             setMenu(false);
         }
     });
