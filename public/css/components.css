@@ -1,0 +1,302 @@
+
+/* KOMPONEN TOMBOL */
+
+/* VARIASI TOMBOL UTAMA */
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--on-primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+    color: var(--on-primary);
+}
+
+
+/* VARIASI TOMBOL SEKUNDER */
+
+.btn-secondary {
+    background: var(--surface-2);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+.btn-secondary:hover {
+    background: var(--border);
+    color: var(--text);
+}
+
+
+/* VARIASI TOMBOL OUTLINE */
+
+.btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline:hover {
+    background: var(--primary);
+    color: var(--on-primary);
+}
+
+
+/* KONDISI TOMBOL NONAKTIF */
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* KELOMPOK TOMBOL */
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* BADGE DAN LABEL KATEGORI */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* BADGE HIJAU */
+
+.badge-primary {
+    background: var(--primary);
+    color: var(--on-primary);
+}
+
+/* BADGE EMAS */
+
+.badge-gold {
+    background: #F5DCA9;
+    color: #68440D;
+}
+
+/* BADGE NETRAL */
+
+.badge-muted {
+    background: var(--surface-2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+}
+
+
+/* KELOMPOK BADGE */
+
+.badge-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+}
+
+/* KARTU INFORMASI */
+
+.info-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.06);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgb(0 0 0 / 0.1);
+}
+
+/* GAMBAR KARTU */
+
+.info-card__image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+}
+
+/* KONTEN KARTU */
+
+.info-card__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+
+    padding: 1.25rem;
+}
+
+.info-card__title {
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.info-card__description {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    line-height: 1.7;
+}
+
+/* TAUTAN KARTU */
+
+.info-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    margin-top: auto;
+    color: var(--primary);
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.info-card__link:hover {
+    color: var(--primary-hover);
+}
+
+/* GRID KARTU INFORMASI */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+/* RESPONSIVE KARTU */
+
+@media (max-width: 768px) {
+    .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* MENGURANGI ANIMASI */
+
+@media (prefers-reduced-motion: reduce) {
+    .info-card {
+        transition: none;
+    }
+}
+
+
+/* KARTU BERITA*/
+
+.news-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.06);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.news-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgb(0 0 0 / 0.1);
+}
+
+/* GAMBAR BERITA */
+.news-card__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
+/* KONTEN BERITA */
+.news-card__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    padding: 1.25rem;
+}
+
+/* INFORMASI TANGGAL DAN KATEGORI */
+.news-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.news-card__date {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+/* JUDUL BERITA */
+.news-card__title {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.15rem;
+    line-height: 1.4;
+}
+
+/* RINGKASAN BERITA */
+.news-card__description {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    line-height: 1.7;
+}
+
+/* TAUTAN BERITA */
+.news-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: auto;
+    padding-top: 1rem;
+
+    color: var(--primary);
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.news-card__link:hover {
+    color: var(--primary-hover);
+}
+
+/* MENGURANGI ANIMASI */
+@media (prefers-reduced-motion: reduce) {
+    .news-card {
+        transition: none;
+    }
+}
+
+
