@@ -400,4 +400,80 @@
 }
 
 
+/* INFORMASI KONTAK DESA */
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+.contact-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+
+    padding: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+}
+
+/* IKON KONTAK */
+.contact-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.8rem;
+
+    background: var(--surface-2);
+    font-size: 1.25rem;
+}
+
+/* KONTEN KONTAK */
+.contact-card__content {
+    min-width: 0;
+}
+
+.contact-card__title {
+    margin-bottom: 0.35rem;
+    font-size: 1rem;
+}
+
+.contact-card__text {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+/* TAUTAN KONTAK */
+.contact-card__link {
+    color: var(--primary);
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.contact-card__link:hover {
+    color: var(--primary-hover);
+}
+
+/* RESPONSIVE KONTAK */
+@media (max-width: 520px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* MENGURANGI ANIMASI */
+@media (prefers-reduced-motion: reduce) {
+    .contact-card {
+        transition: none;
+    }
+}
+
 
