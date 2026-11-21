@@ -1,4 +1,3 @@
-/* EcoVillage — interaksi halaman (tanpa framework) */
 (function () {
   'use strict';
 
@@ -26,7 +25,6 @@
     });
   }
 
-  /* ---------- Tema ---------- */
   function currentTheme() {
     var t = root.getAttribute('data-theme');
     if (t === 'dark' || t === 'light') return t;
@@ -51,7 +49,6 @@
   });
   paintThemeBtn();
 
-  /* ---------- Drawer menu ---------- */
   var drawer = $('#drawer');
   function setDrawer(open) {
     if (!drawer) return;
@@ -64,7 +61,6 @@
   $$('[data-drawer-open]').forEach(function (b) { b.addEventListener('click', function () { setDrawer(true); }); });
   $$('[data-drawer-close]').forEach(function (b) { b.addEventListener('click', function () { setDrawer(false); }); });
 
-  /* ---------- Pencarian ---------- */
   var searchPanel = $('#search-panel');
   if (searchPanel) {
     var sForm = $('[data-search-form]', searchPanel);
@@ -91,7 +87,6 @@
     var full = $('.map-wrap.is-full'); if (full) toggleFull(full);
   });
 
-  /* ---------- Modal ---------- */
   var lastFocus = null;
   function openModal(m) {
     lastFocus = document.activeElement;
@@ -147,7 +142,6 @@
     }
   });
 
-  /* ---------- Lightbox ---------- */
   var lightbox = $('#lightbox');
   document.addEventListener('click', function (e) {
     var img = e.target.closest('img[data-lightbox]');
@@ -158,7 +152,6 @@
     openModal(lightbox);
   });
 
-  /* ---------- Upload: pratinjau + perkecil ukuran ---------- */
   function resizeImage(file, maxSide, quality) {
     return new Promise(function (resolve) {
       if (!/^image\/(jpeg|png|webp)$/.test(file.type) || !window.createImageBitmap) return resolve(file);
@@ -210,7 +203,6 @@
     });
   });
 
-  /* ---------- Penghitung karakter ---------- */
   $$('[data-counter]').forEach(function (t) {
     var out = t.parentNode.querySelector('[data-counter-out]');
     var min = parseInt(t.getAttribute('minlength') || '0', 10);
@@ -220,7 +212,6 @@
     upd();
   });
 
-  /* ---------- Salin teks ---------- */
   $$('[data-copy]').forEach(function (b) {
     b.addEventListener('click', function () {
       var txt = b.getAttribute('data-copy');
@@ -229,7 +220,6 @@
     });
   });
 
-  /* ---------- Login: tab, peran, tampilkan sandi ---------- */
   $$('[data-tab]').forEach(function (b) {
     b.addEventListener('click', function () {
       var t = b.getAttribute('data-tab');
@@ -250,14 +240,12 @@
     });
   });
 
-  /* ---------- Konfirmasi ---------- */
   document.addEventListener('submit', function (e) {
     var f = e.target;
     var msg = f.getAttribute && f.getAttribute('data-confirm');
     if (msg && !window.confirm(msg)) e.preventDefault();
   }, true);
 
-  /* ---------- Muat lebih banyak (galeri) ---------- */
   $$('[data-load-more]').forEach(function (a) {
     a.addEventListener('click', function (e) {
       e.preventDefault();
@@ -272,7 +260,6 @@
     });
   });
 
-  /* ---------- Grafik (Chart.js) ---------- */
   var PALETTE = ['#16803C', '#F59E0B', '#2563EB', '#E5484D', '#0EA5A4', '#8B5CF6', '#84CC16', '#EC4899', '#64748B', '#F97316'];
   function cssVar(n) { return getComputedStyle(root).getPropertyValue(n).trim(); }
   function fmt(v) { return Number(v).toLocaleString('id-ID', { maximumFractionDigits: 2 }); }
@@ -344,7 +331,6 @@
     initCharts(document);
   });
 
-  /* ---------- Header transparan → solid saat scroll ---------- */
   var header = $('[data-header]');
   if (header) {
     var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
@@ -352,14 +338,12 @@
     onScroll();
   }
 
-  /* ---------- Toast ---------- */
   $$('.toast').forEach(function (t, i) {
     var close = function () { t.style.transition = 'opacity .3s'; t.style.opacity = '0'; setTimeout(function () { t.remove(); }, 300); };
     var b = $('[data-toast-close]', t); if (b) b.addEventListener('click', close);
     setTimeout(close, 6500 + i * 800);
   });
 
-  /* ---------- Link pindah tab (login) ---------- */
   $$('[data-tab-link]').forEach(function (a) {
     a.addEventListener('click', function (e) {
       e.preventDefault();
@@ -367,13 +351,11 @@
     });
   });
 
-  /* ---------- Dropzone ---------- */
   $$('[data-dropzone]').forEach(function (z) {
     ['dragenter', 'dragover'].forEach(function (ev) { z.addEventListener(ev, function () { z.classList.add('is-drag'); }); });
     ['dragleave', 'drop'].forEach(function (ev) { z.addEventListener(ev, function () { z.classList.remove('is-drag'); }); });
   });
 
-  /* ---------- Form Lapor: langkah & titik peta ---------- */
   var rf = $('[data-report-form]');
   if (rf) {
     var stepCheck = {
@@ -412,7 +394,6 @@
     });
   });
 
-  /* ---------- Tab bagian informasi A–H ---------- */
   $$('[data-section-tab]').forEach(function (tab) {
     tab.addEventListener('click', function (e) {
       e.preventDefault();
@@ -426,7 +407,6 @@
     });
   });
 
-  /* ---------- Peta (Leaflet) ---------- */
   function tileLayer() {
     return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -456,6 +436,23 @@
     var legend = $('[data-map-legend]');
     var office = (vm.getAttribute('data-office') || '').split(',').map(Number);
     var meMarker = null;
+    var mapSeen = !document.documentElement.classList.contains('motion') || !('IntersectionObserver' in window);
+    function drawIn(group, delay) {
+      if (!mapSeen) return;
+      var n = 0;
+      group.eachLayer(function (l) {
+        var el = l._path;
+        if (!el || !el.animate || !el.getTotalLength) return;
+        var len = el.getTotalLength();
+        var fo = parseFloat(el.getAttribute('fill-opacity')) || 0;
+        el.animate([
+          { strokeDasharray: len + ' ' + len, strokeDashoffset: len, fillOpacity: 0 },
+          { strokeDasharray: len + ' ' + len, strokeDashoffset: 0, fillOpacity: 0, offset: .75 },
+          { strokeDasharray: len + ' ' + len, strokeDashoffset: 0, fillOpacity: fo }
+        ], { duration: 1600, delay: (delay || 0) + n * 120, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'backwards' });
+        n++;
+      });
+    }
 
     fetch('/api/peta').then(function (r) { return r.json(); }).then(function (d) {
       map.setView(d.center, d.zoom);
@@ -475,6 +472,16 @@
       });
       showLevel('desa');
       if (bounds) map.fitBounds(bounds, { padding: [20, 20] });
+      if (!mapSeen) {
+        var mio = new IntersectionObserver(function (es) {
+          if (!es[0].isIntersecting) return;
+          mio.disconnect();
+          mapSeen = true;
+          drawIn(layers.desa, 0);
+          if (current !== 'desa') drawIn(layers[current], 600);
+        }, { threshold: 0.35 });
+        mio.observe(vm);
+      }
     }).catch(function () { vm.innerHTML = '<p class="empty">Peta gagal dimuat.</p>'; });
 
     function showLevel(level) {
@@ -482,6 +489,7 @@
       Object.keys(layers).forEach(function (k) { map.removeLayer(layers[k]); });
       layers.desa.addTo(map);
       if (level !== 'desa') layers[level].addTo(map);
+      drawIn(level === 'desa' ? layers.desa : layers[level], 0);
       points.bringToFront && points.bringToFront();
       var items = [];
       layers[level].eachLayer(function (l) { items.push('<span><i style="background:' + l._meta.color + '"></i>' + esc(l._meta.name) + '</span>'); });
@@ -520,7 +528,6 @@
     map.on('blur', function () { map.scrollWheelZoom.disable(); });
   }
 
-  // Peta kantor desa (halaman kontak)
   $$('[data-office-map]').forEach(function (el) {
     if (!window.L) return;
     var ll = [parseFloat(el.getAttribute('data-lat')), parseFloat(el.getAttribute('data-lng'))];
@@ -529,7 +536,6 @@
     L.marker(ll, { icon: pinIcon('Kantor Desa') }).addTo(m).bindPopup('<strong>' + esc(el.getAttribute('data-title')) + '</strong>').openPopup();
   });
 
-  /* ---------- Admin: pemilih titik & poligon ---------- */
   $$('[data-latlng-picker]').forEach(function (el) {
     if (!window.L) return;
     var lat = $('input[name=lat]'), lng = $('input[name=lng]');
@@ -572,7 +578,6 @@
     ta.addEventListener('change', function () { try { pts = JSON.parse(ta.value) || []; draw(); } catch (e) {} });
   });
 
-  /* ---------- Admin: tabel baris data grafik ---------- */
   var rowsTable = $('[data-rows]');
   if (rowsTable) {
     var tpl = $('#row-template');
@@ -585,4 +590,305 @@
       if (b) b.closest('tr').remove();
     });
   }
+})();
+
+(function () {
+  'use strict';
+  var root = document.documentElement;
+  var motion = root.classList.contains('motion');
+  var finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  var bar = document.createElement('div');
+  bar.className = 'scroll-progress';
+  bar.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(bar);
+
+  var top = document.createElement('button');
+  top.type = 'button';
+  top.className = 'to-top';
+  top.setAttribute('aria-label', 'Kembali ke atas');
+  top.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>';
+  top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: motion ? 'smooth' : 'auto' }); });
+  document.body.appendChild(top);
+
+  var hills = document.querySelector('.home-hero__hills');
+  var heroBg = document.querySelector('.home-hero__bg');
+  var heroContent = document.querySelector('.home-hero__content');
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      var y = window.scrollY;
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0) + ')';
+      top.classList.toggle('is-visible', y > 600);
+      if (motion && y < window.innerHeight * 1.2) {
+        if (hills) hills.style.transform = 'translateY(' + (y * 0.18).toFixed(1) + 'px)';
+        if (heroBg) heroBg.style.transform = 'translateY(' + (y * 0.35).toFixed(1) + 'px) scale(1.08)';
+        if (heroContent) heroContent.style.transform = 'translateY(' + (y * 0.12).toFixed(1) + 'px)';
+      }
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  var SEL = '.section-head, .section-head--split, .bento__card, .news-card, .news-feature, .product-card, .spot, .masonry__item, .info-card, .vm-card, .demo-card, .cat-card, .report-card, .chart-card, .mini-card, .card, .cta-band__inner, .footer-grid > *, .announce';
+  var io = null;
+  function tag(el) {
+    if (el.hasAttribute('data-reveal') || el.closest('.modal, .drawer, .home-hero, .page-hero, .hero-cards, [data-no-reveal]')) return;
+    if (el.parentElement && el.parentElement.closest('[data-reveal]')) return;
+    var sibs = el.parentElement ? Array.prototype.filter.call(el.parentElement.children, function (c) { return c.matches(SEL); }) : [el];
+    var i = Math.max(0, sibs.indexOf(el));
+    el.style.setProperty('--d', Math.min(i, 6) * 80 + 'ms');
+    el.setAttribute('data-reveal', el.matches('.cta-band__inner') ? 'zoom' : '');
+    if (io) io.observe(el); else el.classList.add('is-in');
+  }
+  if (motion && 'IntersectionObserver' in window) {
+    io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var el = en.target;
+        el.classList.add('is-in');
+        io.unobserve(el);
+        var d = parseInt(el.style.getPropertyValue('--d'), 10) || 0;
+        setTimeout(function () { el.removeAttribute('data-reveal'); el.classList.remove('is-in'); el.style.removeProperty('--d'); }, 900 + d);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  }
+  document.querySelectorAll(SEL).forEach(tag);
+  if ('MutationObserver' in window) {
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) {
+        m.addedNodes.forEach(function (n) {
+          if (n.nodeType !== 1) return;
+          if (n.matches(SEL)) tag(n);
+          n.querySelectorAll && n.querySelectorAll(SEL).forEach(tag);
+        });
+      });
+    }).observe(document.querySelector('main') || document.body, { childList: true, subtree: true });
+  }
+
+  function countUp(el) {
+    var raw = el.textContent.trim();
+    if (!/^\d{1,3}(\.\d{3})*(,\d+)?$|^\d+(,\d+)?$/.test(raw)) return;
+    var dec = (raw.split(',')[1] || '').length;
+    var target = parseFloat(raw.replace(/\./g, '').replace(',', '.'));
+    if (!isFinite(target) || target === 0) return;
+    var fmt = new Intl.NumberFormat('id-ID', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    var start = null, dur = Math.min(1800, 700 + target * 0.4);
+    el.textContent = fmt.format(0);
+    function step(ts) {
+      if (!start) start = ts;
+      var p = Math.min(1, (ts - start) / dur);
+      var e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt.format(target * e);
+      if (p < 1) requestAnimationFrame(step); else el.textContent = raw;
+    }
+    requestAnimationFrame(step);
+  }
+  if (motion && 'IntersectionObserver' in window) {
+    var cio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { countUp(en.target); cio.unobserve(en.target); } });
+    }, { threshold: 0.6 });
+    document.querySelectorAll('.demo-card__num, .mini-card__num, .stat__num, [data-count]').forEach(function (el) { cio.observe(el); });
+  }
+
+  document.addEventListener('pointerdown', function (e) {
+    var b = e.target.closest('.btn');
+    if (!b || !motion) return;
+    var r = b.getBoundingClientRect();
+    var s = Math.max(r.width, r.height);
+    var dot = document.createElement('span');
+    dot.className = 'ripple';
+    dot.style.width = dot.style.height = s + 'px';
+    dot.style.left = (e.clientX - r.left - s / 2) + 'px';
+    dot.style.top = (e.clientY - r.top - s / 2) + 'px';
+    b.appendChild(dot);
+    setTimeout(function () { dot.remove(); }, 650);
+  });
+
+  if (motion && finePointer) {
+    var TILT = '.bento__card, .hero-card, .spot, .product-card, .news-feature';
+    var bindTilt = function (card) {
+      if (card.__tilt) return;
+      card.__tilt = true;
+      card.classList.add('tilt');
+      if (getComputedStyle(card).position === 'static') card.style.position = 'relative';
+      var max = card.matches('.hero-card') ? 4 : 6;
+      card.addEventListener('pointermove', function (e) {
+        var r = card.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        card.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+        card.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+        card.classList.add('is-tilting');
+        card.style.transform = 'perspective(900px) translateY(-6px) rotateX(' + ((0.5 - y) * max).toFixed(2) + 'deg) rotateY(' + ((x - 0.5) * max).toFixed(2) + 'deg)';
+      });
+      card.addEventListener('pointerleave', function () {
+        card.classList.remove('is-tilting');
+        card.style.transform = '';
+      });
+    };
+    document.querySelectorAll(TILT).forEach(bindTilt);
+
+    document.querySelectorAll('.home-hero .btn--white, .cta-band .btn, .header-cta').forEach(function (b) {
+      b.addEventListener('pointermove', function (e) {
+        var r = b.getBoundingClientRect();
+        var dx = (e.clientX - (r.left + r.width / 2)) * 0.18, dy = (e.clientY - (r.top + r.height / 2)) * 0.25;
+        b.style.transform = 'translate(' + dx.toFixed(1) + 'px,' + (dy - 2).toFixed(1) + 'px)';
+      });
+      b.addEventListener('pointerleave', function () { b.style.transform = ''; });
+    });
+  }
+})();
+
+(function () {
+  'use strict';
+  var root = document.documentElement;
+  var motion = root.classList.contains('motion');
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+
+  var hero = document.querySelector('[data-sky]');
+  if (hero) {
+    var stars = hero.querySelector('.sky__stars');
+    for (var i = 0; i < 70; i++) {
+      var s = document.createElement('i');
+      s.className = 'star';
+      s.style.left = rnd(0, 100).toFixed(2) + '%';
+      s.style.top = rnd(0, 62).toFixed(2) + '%';
+      var z = rnd(1, 2.6).toFixed(1) + 'px';
+      s.style.width = s.style.height = z;
+      s.style.setProperty('--t', rnd(1.8, 4.5).toFixed(2) + 's');
+      s.style.setProperty('--dl', (-rnd(0, 4)).toFixed(2) + 's');
+      stars.appendChild(s);
+    }
+    var flies = hero.querySelector('.sky__fireflies');
+    var nFly = window.innerWidth < 640 ? 14 : 26;
+    for (var j = 0; j < nFly; j++) {
+      var f = document.createElement('i');
+      f.className = 'firefly';
+      f.style.left = rnd(2, 98).toFixed(2) + '%';
+      f.style.top = rnd(48, 92).toFixed(2) + '%';
+      ['1', '2', '3'].forEach(function (k) {
+        f.style.setProperty('--x' + k, rnd(-60, 60).toFixed(0) + 'px');
+        f.style.setProperty('--y' + k, rnd(-45, 35).toFixed(0) + 'px');
+      });
+      f.style.setProperty('--t', rnd(7, 14).toFixed(1) + 's');
+      f.style.setProperty('--b', rnd(1.6, 3.4).toFixed(1) + 's');
+      f.style.setProperty('--dl', (-rnd(0, 10)).toFixed(1) + 's');
+      flies.appendChild(f);
+    }
+
+    var ICON = {
+      pagi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2M4.9 4.9l1.4 1.4M2 12h2M20 12h2M17.7 6.3l1.4-1.4M8 16a4 4 0 1 1 8 0"/><path d="M3 20h18"/></svg>',
+      siang: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+      sore: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 10V2M4.9 10.9l1.4 1.4M2 18h2M20 18h2M17.7 12.3l1.4-1.4M8 18a4 4 0 1 1 8 0"/><path d="M3 22h18M16 6l-4 4-4-4"/></svg>',
+      malam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>'
+    };
+    var SAPA = { pagi: 'Selamat pagi', siang: 'Selamat siang', sore: 'Selamat sore', malam: 'Selamat malam' };
+    var chip = hero.querySelector('[data-sky-chip]');
+    var fmtJam = new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'Asia/Jakarta' });
+    var fmtH = new Intl.DateTimeFormat('id-ID', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Asia/Jakarta' });
+    function isDark() {
+      var t = root.getAttribute('data-theme');
+      return t === 'dark' || (!t && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+    function phase() {
+      var h = parseInt(fmtH.format(new Date()), 10);
+      if (isDark() || h >= 18 || h < 5) return 'malam';
+      return h < 10 ? 'pagi' : h < 15 ? 'siang' : 'sore';
+    }
+    function paint() {
+      var p = phase();
+      ['pagi', 'siang', 'sore', 'malam'].forEach(function (k) { hero.classList.toggle('is-' + k, k === p); });
+      if (chip) {
+        chip.hidden = false;
+        chip.innerHTML = '<span class="sky-chip__icon">' + ICON[p] + '</span>' + SAPA[p] + ' dari Marga Mulya · <b>' + fmtJam.format(new Date()).replace(':', '.') + ' WIB</b>';
+      }
+    }
+    paint();
+    setInterval(paint, 30000);
+    new MutationObserver(paint).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+
+  var heads = document.querySelectorAll('.section-head h2, .section-head--split h2, .cta-band h2, .page-hero h1');
+  var wio = motion && 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+    es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('is-words-in'); wio.unobserve(en.target); } });
+  }, { threshold: 0.4 }) : null;
+  Array.prototype.forEach.call(heads, function (h) {
+    if (!motion || h.children.length || h.closest('.modal, .drawer')) return;
+    var words = h.textContent.trim().split(/\s+/);
+    if (!words[0]) return;
+    h.setAttribute('aria-label', h.textContent.trim());
+    h.innerHTML = words.map(function (w, i) {
+      return '<span class="split-w" aria-hidden="true"><span style="--i:' + i + '">' + w.replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }) + '</span></span>';
+    }).join(' ');
+    h.classList.add('split-words');
+    if (h.closest('.page-hero')) { h.style.animation = 'none'; setTimeout(function () { h.classList.add('is-words-in'); }, 80); }
+    else if (wio) wio.observe(h);
+  });
+
+  var tb = document.querySelector('.ticket-box');
+  if (tb) {
+    var icon = tb.querySelector('.i-lg');
+    if (icon) icon.querySelectorAll('circle, path').forEach(function (el) { el.setAttribute('pathLength', '1'); });
+    var code = tb.querySelector('.ticket-box__code');
+    if (code && motion) {
+      var txt = code.textContent;
+      code.setAttribute('aria-label', txt);
+      code.innerHTML = txt.split('').map(function (c, i) { return '<span class="ch" aria-hidden="true" style="--i:' + i + '">' + (c === ' ' ? '&nbsp;' : c) + '</span>'; }).join('');
+    }
+    if (motion) setTimeout(function () { confetti(tb); }, 650);
+  }
+  function confetti(from) {
+    var cv = document.createElement('canvas');
+    cv.className = 'confetti';
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+    document.body.appendChild(cv);
+    var ctx = cv.getContext('2d');
+    ctx.scale(dpr, dpr);
+    var r = from.getBoundingClientRect();
+    var ox = r.left + r.width / 2, oy = r.top + 60;
+    var colors = ['#17803F', '#2FA35A', '#7BC96F', '#A6E3B7', '#F5B43C', '#E8D45A'];
+    var parts = [];
+    for (var k = 0; k < 90; k++) {
+      var a = rnd(-Math.PI, 0), v = rnd(5, 13);
+      parts.push({ x: ox, y: oy, vx: Math.cos(a) * v * rnd(.6, 1.3), vy: Math.sin(a) * v - rnd(1, 4), rot: rnd(0, 6.28), vr: rnd(-.25, .25), w: rnd(6, 11), h: rnd(10, 18), c: colors[k % colors.length], sway: rnd(0, 6.28) });
+    }
+    var t0 = performance.now();
+    (function frame(now) {
+      var dt = Math.min(2, (now - (frame.last || now)) / 16.7); frame.last = now;
+      var life = (now - t0) / 2600;
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      parts.forEach(function (p) {
+        p.vy += .28 * dt; p.vx *= .985; p.vy *= .985;
+        p.sway += .08 * dt;
+        p.x += (p.vx + Math.sin(p.sway) * .8) * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
+        ctx.save(); ctx.globalAlpha = Math.max(0, 1 - life); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.fillStyle = p.c; ctx.beginPath(); ctx.ellipse(0, 0, p.w / 2, p.h / 2, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, -p.h / 2); ctx.lineTo(0, p.h / 2); ctx.stroke();
+        ctx.restore();
+      });
+      if (life < 1) requestAnimationFrame(frame); else cv.remove();
+    })(t0);
+  }
+
+  var fill = document.querySelector('.stepper__fill');
+  if (fill && motion) {
+    var target = fill.style.width;
+    fill.style.transition = 'none';
+    fill.style.width = '0%';
+    void fill.offsetWidth;
+    fill.style.transition = '';
+    document.querySelectorAll('.stepper .step').forEach(function (st, i) { st.style.setProperty('--i', i); });
+    var sio = new IntersectionObserver(function (es) {
+      if (!es[0].isIntersecting) return;
+      sio.disconnect();
+      setTimeout(function () { fill.style.width = target; }, 120);
+    }, { threshold: 0.5 });
+    sio.observe(fill.parentNode);
+  }
+  document.querySelectorAll('.timeline li').forEach(function (li, i) { li.style.setProperty('--i', i); });
 })();
