@@ -7,7 +7,6 @@ namespace App\Admin;
 use function App\{all, one, val, q, insert, update, view, redirect, flash, require_admin, abort, store_upload,
     delete_media, paginate, input, setting, save_setting, user, csrf_token};
 
-/** Daftar field pengaturan yang bisa diubah admin, dikelompokkan per kartu */
 function settings_schema(): array
 {
     return [
@@ -80,9 +79,6 @@ function profile_schema(): array
     ];
 }
 
-/* ---------------------------------------------------------
- * DASHBOARD
- * ------------------------------------------------------- */
 function dashboard(): void
 {
     require_admin();
@@ -106,9 +102,6 @@ function dashboard(): void
     ], 'admin');
 }
 
-/* ---------------------------------------------------------
- * PENGATURAN & PROFIL (key-value)
- * ------------------------------------------------------- */
 function settings_form(): void
 {
     require_admin();
@@ -177,9 +170,6 @@ function save_schema(array $schema): void
     }
 }
 
-/* ---------------------------------------------------------
- * DATA STATISTIK (isi grafik)
- * ------------------------------------------------------- */
 function stats_index(): void
 {
     require_admin();
@@ -238,9 +228,6 @@ function stats_save(string $id): void
     redirect('/admin/statistik/' . $id);
 }
 
-/* ---------------------------------------------------------
- * LAPORAN WARGA
- * ------------------------------------------------------- */
 function reports_index(): void
 {
     require_admin();
@@ -316,9 +303,6 @@ function report_update(string $id): void
     redirect('/admin/laporan/' . $id);
 }
 
-/* ---------------------------------------------------------
- * GALERI: persetujuan foto warga
- * ------------------------------------------------------- */
 function gallery_status(string $id): void
 {
     require_admin();
@@ -331,9 +315,6 @@ function gallery_status(string $id): void
     \App\back('/admin/kelola/galeri');
 }
 
-/* ---------------------------------------------------------
- * PESAN DARI HALAMAN KONTAK
- * ------------------------------------------------------- */
 function messages_index(): void
 {
     require_admin();
@@ -358,9 +339,6 @@ function message_action(string $id): void
     redirect('/admin/pesan');
 }
 
-/* ---------------------------------------------------------
- * PENGGUNA
- * ------------------------------------------------------- */
 function users_index(): void
 {
     require_admin();

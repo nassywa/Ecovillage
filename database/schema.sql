@@ -1,6 +1,3 @@
--- =========================================================
--- EcoVillage Desa Marga Mulya — skema database MySQL 8 / MariaDB 10.6+
--- =========================================================
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -10,7 +7,6 @@ DROP TABLE IF EXISTS report_updates, reports, report_categories, messages, galle
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Foto & gambar (disimpan di database karena disk Vercel bersifat sementara)
 CREATE TABLE media (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     mime VARCHAR(60) NOT NULL,
@@ -20,13 +16,11 @@ CREATE TABLE media (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Pengaturan situs (teks beranda, kontak, sosial media, profil, dll)
 CREATE TABLE settings (
     skey VARCHAR(100) PRIMARY KEY,
     svalue MEDIUMTEXT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Session login (pengganti file session PHP)
 CREATE TABLE sessions (
     id VARCHAR(128) PRIMARY KEY,
     data MEDIUMTEXT NOT NULL,
@@ -34,7 +28,6 @@ CREATE TABLE sessions (
     INDEX idx_sessions_exp (expires_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Akun warga & admin
 CREATE TABLE users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -51,7 +44,6 @@ CREATE TABLE users (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Jam kerja / jam pelayanan kantor desa
 CREATE TABLE office_hours (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     day VARCHAR(20) NOT NULL,
@@ -61,7 +53,6 @@ CREATE TABLE office_hours (
     sort INT NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Perangkat / aparat desa (struktur pemerintahan)
 CREATE TABLE officials (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -72,7 +63,6 @@ CREATE TABLE officials (
     CONSTRAINT fk_officials_photo FOREIGN KEY (photo_id) REFERENCES media(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Data statistik desa (poin A–H) → ditampilkan sebagai grafik
 CREATE TABLE stat_sections (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     code CHAR(1) NOT NULL UNIQUE,
@@ -104,7 +94,6 @@ CREATE TABLE stat_items (
     CONSTRAINT fk_items_group FOREIGN KEY (group_id) REFERENCES stat_groups(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Peta wilayah (poligon GeoJSON untuk Desa, RW, RT)
 CREATE TABLE map_regions (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     level ENUM('desa','rw','rt') NOT NULL,
@@ -118,7 +107,6 @@ CREATE TABLE map_regions (
     sort INT NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Titik penting di peta (kantor desa, sekolah, posyandu, dll)
 CREATE TABLE map_points (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
@@ -129,12 +117,11 @@ CREATE TABLE map_points (
     sort INT NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Berita & kegiatan
 CREATE TABLE news (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
     slug VARCHAR(220) NOT NULL UNIQUE,
-    category ENUM('Berita','Kegiatan','Pengumuman') NOT NULL DEFAULT 'Berita',
+    category ENUM('Berita','Kegiatan','Organisasi') NOT NULL DEFAULT 'Berita',
     featured TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Berita utama',
     excerpt VARCHAR(300) NULL,
     content MEDIUMTEXT NOT NULL,
@@ -147,7 +134,6 @@ CREATE TABLE news (
     CONSTRAINT fk_news_image FOREIGN KEY (image_id) REFERENCES media(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Jelajah Desa: UMKM, Wisata, Budaya
 CREATE TABLE places (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
@@ -165,7 +151,6 @@ CREATE TABLE places (
     CONSTRAINT fk_places_image FOREIGN KEY (image_id) REFERENCES media(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Galeri foto (admin & warga; foto warga perlu persetujuan admin)
 CREATE TABLE gallery (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(150) NOT NULL,
@@ -181,7 +166,6 @@ CREATE TABLE gallery (
     CONSTRAINT fk_gallery_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- LaporDesa
 CREATE TABLE report_categories (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(80) NOT NULL,
@@ -221,7 +205,6 @@ CREATE TABLE report_updates (
     CONSTRAINT fk_updates_report FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Pesan dari halaman Kontak
 CREATE TABLE messages (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,

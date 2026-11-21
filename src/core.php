@@ -9,10 +9,6 @@ use PDOException;
 use SessionHandlerInterface;
 use Throwable;
 
-/* =========================================================
- * KONFIGURASI & DATABASE
- * ======================================================= */
-
 function env(string $key, ?string $default = null): ?string
 {
     $v = getenv($key);
@@ -29,7 +25,6 @@ function db(): PDO
         return $pdo;
     }
 
-    // Mendukung DATABASE_URL (mysql://user:pass@host:port/db) atau variabel terpisah
     $url = env('DATABASE_URL');
     if ($url) {
         $p = parse_url($url);
@@ -53,11 +48,9 @@ function db(): PDO
         PDO::ATTR_TIMEOUT => 10,
     ];
 
-    // Layanan MySQL cloud (Aiven, dll) mewajibkan koneksi SSL
     if (in_array(strtolower((string) env('DB_SSL', 'false')), ['1', 'true', 'yes', 'required'], true)) {
         $ca = env('DB_SSL_CA');
         if ($ca && str_contains($ca, 'BEGIN CERTIFICATE')) {
-            // Sertifikat CA ditempel langsung di Environment Variable
             $caFile = sys_get_temp_dir() . '/db-ca-' . md5($ca) . '.pem';
             if (!is_file($caFile)) {
                 file_put_contents($caFile, str_replace('\n', "\n", $ca));
@@ -129,10 +122,6 @@ function update(string $table, array $data, int $id): void
     q("UPDATE `$table` SET $set WHERE id = :__id", $params);
 }
 
-/* =========================================================
- * PENGATURAN SITUS (tabel settings)
- * ======================================================= */
-
 function setting(string $key, string $default = ''): string
 {
     static $cache = null;
@@ -157,10 +146,6 @@ function save_setting(string $key, string $value): void
     );
 }
 
-/* =========================================================
- * SESSION DI DATABASE (Vercel serverless tidak punya disk tetap)
- * ======================================================= */
-
 final class DbSessionHandler implements SessionHandlerInterface
 {
     public function open(string $path, string $name): bool
@@ -181,7 +166,6 @@ final class DbSessionHandler implements SessionHandlerInterface
 
     public function write(string $id, string $data): bool
     {
-        // Session kosong tidak disimpan (hemat kapasitas database gratis)
         if ($data === '') {
             q('DELETE FROM sessions WHERE id = :id', [':id' => $id]);
             return true;
@@ -231,10 +215,6 @@ function is_https(): bool
         || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
 }
 
-/* =========================================================
- * AUTENTIKASI
- * ======================================================= */
-
 function user(): ?array
 {
     static $u = false;
@@ -278,10 +258,6 @@ function require_admin(): array
     }
     return $u;
 }
-
-/* =========================================================
- * CSRF, FLASH, INPUT
- * ======================================================= */
 
 function csrf_token(): string
 {
@@ -337,10 +313,6 @@ function input(string $key, string $default = ''): string
     return is_string($v) ? trim($v) : $default;
 }
 
-/* =========================================================
- * RESPON & TAMPILAN
- * ======================================================= */
-
 function e(mixed $v): string
 {
     return htmlspecialchars((string) $v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -382,7 +354,6 @@ function abort(int $code, string $message = ''): never
     exit;
 }
 
-/** Render view di dalam layout. $layout: 'public' | 'admin' | null */
 function view(string $name, array $data = [], ?string $layout = 'public'): void
 {
     $content = render($name, $data);
@@ -414,17 +385,9 @@ function active(string $prefix): string
     return $on ? ' aria-current="page"' : '';
 }
 
-/* =========================================================
- * MEDIA: foto disimpan di MySQL (disk Vercel bersifat sementara)
- * ======================================================= */
-
 const MAX_UPLOAD = 3_000_000;
 const ALLOWED_MIME = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
 
-/**
- * Simpan file upload ke tabel media. Return id media atau null kalau tidak ada file.
- * Lempar \RuntimeException dengan pesan ramah jika file tidak valid.
- */
 function store_upload(string $field): ?int
 {
     $f = $_FILES[$field] ?? null;
@@ -471,10 +434,6 @@ function media_url(mixed $id, string $fallback = '/assets/img/placeholder.svg'):
     return $id ? '/media/' . (int) $id : $fallback;
 }
 
-/* =========================================================
- * FORMAT & UTILITAS
- * ======================================================= */
-
 const BULAN = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 const BULAN_PENDEK = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
@@ -519,7 +478,6 @@ function excerpt(?string $text, int $len = 140): string
     return mb_strlen($t) > $len ? rtrim(mb_substr($t, 0, $len)) . '…' : $t;
 }
 
-/** Paragraf sederhana dari teks biasa (konten CMS disimpan sebagai teks). */
 function paragraphs(?string $text): string
 {
     $out = '';
@@ -538,7 +496,6 @@ function paginate(int $total, int $perPage, int $page): array
     return ['total' => $total, 'per' => $perPage, 'page' => $page, 'pages' => $pages, 'offset' => ($page - 1) * $perPage];
 }
 
-/** URL dengan query string yang diperbarui */
 function qs(array $changes): string
 {
     $params = array_merge($_GET, $changes);

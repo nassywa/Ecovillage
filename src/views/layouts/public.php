@@ -32,9 +32,10 @@ $footerNav = [['/', 'Beranda'], ['/profil', 'Profil Desa'], ['/informasi', 'Info
     <?php if (in_array('leaflet', $pageScripts, true)): ?>
         <link rel="stylesheet" href="/assets/vendor/leaflet/leaflet.css">
     <?php endif; ?>
-    <link rel="stylesheet" href="/assets/css/app.css?v=5">
+    <link rel="stylesheet" href="/assets/css/app.css?v=8">
     <script>
         try { var t = localStorage.getItem('ecovillage-theme'); if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+        if (window.matchMedia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
     </script>
 </head>
 <body>
@@ -175,6 +176,6 @@ $footerNav = [['/', 'Beranda'], ['/profil', 'Profil Desa'], ['/informasi', 'Info
 
 <?php if (in_array('chart', $pageScripts, true)): ?><script src="/assets/vendor/chart.umd.min.js"></script><?php endif; ?>
 <?php if (in_array('leaflet', $pageScripts, true)): ?><script src="/assets/vendor/leaflet/leaflet.js"></script><?php endif; ?>
-<script src="/assets/js/app.js?v=5"></script>
+<script src="/assets/js/app.js?v=8"></script>
 </body>
 </html>

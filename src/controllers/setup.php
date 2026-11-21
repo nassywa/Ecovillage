@@ -7,10 +7,6 @@ namespace App\Setup;
 use Throwable;
 use function App\{env, db, render, e};
 
-/**
- * Halaman instalasi: membuat tabel + mengisi data contoh Desa Marga Mulya.
- * Dilindungi SETUP_KEY (Environment Variable). Hapus/ubah SETUP_KEY setelah instalasi.
- */
 function page(): void
 {
     echo render('pages/setup', ['message' => null, 'ok' => false, 'enabled' => (bool) env('SETUP_KEY')]);
@@ -47,7 +43,7 @@ function run(): void
 function install(\PDO $pdo, string $adminEmail, string $adminPass): void
 {
     $sql = file_get_contents(\App\ROOT . '/database/schema.sql');
-    // Pecah per pernyataan (skema tidak memakai ; di dalam string)
+
     $sql = preg_replace('/^\s*--.*$/m', '', $sql);
     foreach (array_filter(array_map('trim', explode(';', $sql))) as $stmt) {
         $pdo->exec($stmt);

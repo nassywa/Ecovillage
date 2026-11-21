@@ -5,7 +5,25 @@ use function App\{e, icon, setting, media_url, tgl, excerpt};
 $heroImg = setting('hero_image');
 $marquee = setting('marquee_text', 'Desa Maju • Hijau • Sejahtera');
 ?>
-<section class="home-hero" aria-labelledby="hero-title">
+<section class="home-hero" aria-labelledby="hero-title" data-sky>
+    <script>
+        (function (h) {
+            var jam = parseInt(new Intl.DateTimeFormat('id-ID', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Asia/Jakarta' }).format(new Date()), 10);
+            var t = document.documentElement.getAttribute('data-theme');
+            var gelap = t === 'dark' || (!t && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            var fase = gelap || jam >= 18 || jam < 5 ? 'malam' : jam < 10 ? 'pagi' : jam < 15 ? 'siang' : 'sore';
+            h.className += ' is-' + fase;
+        })(document.currentScript.parentNode);
+    </script>
+    <div class="sky" aria-hidden="true">
+        <span class="sky__sun"></span>
+        <span class="sky__moon"></span>
+        <span class="sky__cloud sky__cloud--1"></span>
+        <span class="sky__cloud sky__cloud--2"></span>
+        <span class="sky__cloud sky__cloud--3"></span>
+        <div class="sky__stars"></div>
+        <div class="sky__fireflies"></div>
+    </div>
     <?php if ($heroImg): ?><img class="home-hero__bg" src="<?= media_url($heroImg) ?>" alt="" fetchpriority="high"><?php endif; ?>
     <svg class="home-hero__hills" viewBox="0 0 1440 400" preserveAspectRatio="none" aria-hidden="true">
         <path d="M0 210 C 240 140 420 170 640 200 S 1080 150 1440 170 V400 H0Z" fill="#1B7A41" opacity=".55"/>
@@ -18,6 +36,7 @@ $marquee = setting('marquee_text', 'Desa Maju • Hijau • Sejahtera');
         <path d="M0 340 C 320 300 640 330 960 330 S 1300 310 1440 320 V400 H0Z" fill="#0C3E21"/>
     </svg>
     <div class="container home-hero__content">
+        <span class="sky-chip" data-sky-chip hidden></span>
         <span class="kicker"><?= e(setting('region_line')) ?></span>
         <h1 id="hero-title"><?= e(setting('hero_title')) ?></h1>
         <p class="lead"><?= e(setting('hero_subtitle')) ?></p>
@@ -83,7 +102,7 @@ $marquee = setting('marquee_text', 'Desa Maju • Hijau • Sejahtera');
             <a class="bento__card bento__card--wide" href="/berita">
                 <span class="tile-icon tile-icon--soft"><?= icon('newspaper') ?></span>
                 <h3>Berita</h3>
-                <p>Kabar, pengumuman, dan kegiatan terbaru.</p>
+                <p>Kabar, kegiatan, dan organisasi desa terbaru.</p>
                 <span class="bento__more">Buka →</span>
             </a>
         </div>

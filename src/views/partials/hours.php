@@ -2,7 +2,6 @@
 
 use function App\e;
 
-/** @var array $hours */
 $hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][(int) date('w')];
 $nowMin = (int) date('G') * 60 + (int) date('i');
 $isOpen = false;

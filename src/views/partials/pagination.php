@@ -2,7 +2,6 @@
 
 use function App\{qs, icon};
 
-/** @var array $pg */
 if (($pg['pages'] ?? 1) <= 1) {
     return;
 }

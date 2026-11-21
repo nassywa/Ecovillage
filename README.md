@@ -17,7 +17,7 @@ Dibuat dengan **HTML, CSS, JavaScript, PHP 8.3, dan MySQL**, lalu di-deploy ke *
 | 3 | Informasi Desa | `/informasi` | 8 kartu kategori **A–H** (jumlah set data otomatis); klik untuk membuka grafik (Chart.js) + tabel rincian angka |
 | 4 | Galeri | `/galeri` | Masonry, filter kategori, lightbox, "Muat lebih banyak", **warga bisa kirim foto → perlu persetujuan admin** |
 | 5 | Sudut Istimewa (Jelajah Desa) | `/jelajah` | Sudut Favorit Warga, Produk Unggulan, direktori UMKM/Wisata/Budaya dengan pencarian, filter, paginasi, detail + tombol WhatsApp |
-| 6 | Berita & Kegiatan | `/berita` | Berita utama, filter Semua/Berita/Kegiatan/Pengumuman, pencarian, paginasi, detail berita |
+| 6 | Berita & Kegiatan | `/berita` | Berita utama, filter Semua/Berita/Kegiatan/Organisasi, pencarian, paginasi, detail berita |
 | 7 | Lapor Desa | `/lapor` | Wajib masuk akun; 4 langkah (kategori, lokasi + titik peta, uraian, foto), nomor tiket otomatis |
 | 8 | Cek Status | `/cek-status` | Cari nomor tiket, filter Semua/kategori/status, progres Diterima → Diproses → Selesai, riwayat |
 | 9 | Kontak | `/kontak` | Alamat, email, telepon, WhatsApp, peta Kantor Desa, jam pelayanan, Facebook/TikTok/YouTube/Instagram, form kirim pesan |

@@ -2,10 +2,10 @@
 
 use function App\{e, icon, media_url, tgl, render, excerpt, qs};
 
-$cats = ['Berita', 'Kegiatan', 'Pengumuman'];
+$cats = ['Berita', 'Kegiatan', 'Organisasi'];
 $showFeature = $featured && $pg['page'] === 1 && $search === '' && ($cat === '' || $cat === $featured['category']);
 ?>
-<?= render('partials/page_hero', ['kicker' => 'Kabar desa', 'heading' => 'Berita & Kegiatan', 'text' => 'Informasi terbaru seputar kegiatan dan pengumuman desa.']) ?>
+<?= render('partials/page_hero', ['kicker' => 'Kabar desa', 'heading' => 'Berita & Kegiatan', 'text' => 'Informasi terbaru seputar kegiatan dan organisasi desa.']) ?>
 
 <section class="section section--lg">
     <div class="container">
