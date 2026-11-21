@@ -343,6 +343,9 @@ function report_submit(): void
     if (!$errors) {
         try {
             $photoId = store_upload('photo');
+            if (!$photoId) {
+                $errors[] = 'Foto pendukung wajib diunggah.';
+            }
         } catch (\RuntimeException $ex) {
             $errors[] = $ex->getMessage();
         }
@@ -381,9 +384,8 @@ function report_submit(): void
  * ------------------------------------------------------- */
 function report_status(): void
 {
-    $ticket = strtoupper(trim(input('tiket')));
-    $cat = input('kategori');
-    $status = input('status');
+    // ticket_number adalah parameter resmi; tiket tetap diterima agar tautan lama tidak rusak.
+    $ticket = strtoupper(trim(input('ticket_number') ?: input('tiket')));
 
     $detail = null;
     $history = [];
@@ -394,44 +396,11 @@ function report_status(): void
         }
     }
 
-    $where = '1=1';
-    $params = [];
-    if ($cat !== '') {
-        $where .= ' AND category = :c';
-        $params[':c'] = $cat;
-    }
-    if (in_array($status, \App\REPORT_STATUSES, true)) {
-        $where .= ' AND status = :s';
-        $params[':s'] = $status;
-    } else {
-        $status = '';
-    }
-    if ($ticket !== '') {
-        $where .= ' AND ticket LIKE :t';
-        $params[':t'] = '%' . $ticket . '%';
-    }
-    $total = (int) val("SELECT COUNT(*) FROM reports WHERE $where", $params);
-    $pg = paginate($total, 8, (int) input('hal', '1'));
-    $rows = all("SELECT ticket, category, location, status, created_at, accepted_at FROM reports
-                 WHERE $where ORDER BY created_at DESC, id DESC LIMIT {$pg['per']} OFFSET {$pg['offset']}", $params);
-
-    $summary = [];
-    foreach (all('SELECT status, COUNT(*) n FROM reports GROUP BY status') as $r) {
-        $summary[$r['status']] = (int) $r['n'];
-    }
-
     view('pages/status', [
         'title' => 'Cek Status Laporan',
         'ticket' => $ticket,
         'detail' => $detail,
         'history' => $history,
-        'rows' => $rows,
-        'pg' => $pg,
-        'cat' => $cat,
-        'status' => $status,
-        'categories' => all('SELECT name, icon FROM report_categories ORDER BY sort, id'),
-        'summary' => $summary,
-        'mine' => ($u = user()) ? all('SELECT ticket, category, status, created_at FROM reports WHERE user_id = :u ORDER BY id DESC LIMIT 5', [':u' => $u['id']]) : [],
     ]);
 }
 

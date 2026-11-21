@@ -84,13 +84,13 @@ $u = user();
                     </div>
 
                     <div class="field">
-                        <span class="label">Foto pendukung</span>
+                        <span class="label">Foto pendukung <span class="req">*</span></span>
                         <label class="upload dropzone" data-dropzone>
                             <?= icon('image', 'i-lg') ?>
                             <strong>Tarik foto pendukung ke sini atau pilih berkas</strong>
-                            <span class="upload__name">Opsional · JPG, PNG, atau WebP · maksimal 3 MB</span>
+                            <span class="upload__name">Wajib · JPG, PNG, atau WebP · maksimal 3 MB</span>
                             <img class="upload__preview" alt="Pratinjau foto">
-                            <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" data-resize>
+                            <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" data-resize required>
                         </label>
                     </div>
 
@@ -117,7 +117,7 @@ $u = user();
                 <ul class="guide">
                     <li><?= icon('circle-check') ?> Gunakan bahasa yang santun dan jelas.</li>
                     <li><?= icon('circle-check') ?> Sebutkan lokasi sedetail mungkin.</li>
-                    <li><?= icon('circle-check') ?> Lampirkan foto bila membantu.</li>
+                    <li><?= icon('circle-check') ?> Lampirkan foto pendukung laporan.</li>
                     <li><?= icon('circle-check') ?> Pantau status lewat nomor tiket.</li>
                 </ul>
                 <a href="/cek-status" class="btn btn--light btn--block btn--pill" style="border:1px solid var(--border)"><?= icon('file-search', 'i-sm') ?> Cek Status Laporan</a>
