@@ -1,23 +1,24 @@
-config/database.php
+# Konfigurasi lokal & rahasia
 .env
+.vercel
+config/database.php
+
+# Editor / AI agent
 .vscode/
 .idea/
 .claude/
 .cursor/
-CLAUDE.md
-AGENTS.md
-Thumbs.db
-.DS_Stores
-# AI Agent
 .agents/
 .codex/
+CLAUDE.md
+AGENTS.md
 GEMINI.md
 
-# Temporary testing files
-test_connection.php
-app/check_upload_folder.php
-public/test_*.html
+# Sistem
+Thumbs.db
+.DS_Store
+node_modules/
 
-# Uploaded files (keep folder structure)
-uploads/*
-!uploads/.gitkeep
+# File uji sementara
+test_connection.php
+public/test_*.html
