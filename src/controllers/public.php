@@ -8,9 +8,6 @@ use function App\{all, one, val, q, insert, setting, view, redirect, back, flash
     user, login_user, abort, json_out, store_upload, paginate, honeypot_tripped, excerpt, tgl, media_url,
     office_hours, env, e};
 
-/* ---------------------------------------------------------
- * BERANDA
- * ------------------------------------------------------- */
 function home(): void
 {
     view('pages/home', [
@@ -22,9 +19,6 @@ function home(): void
     ]);
 }
 
-/* ---------------------------------------------------------
- * PROFIL DESA
- * ------------------------------------------------------- */
 function profile(): void
 {
     $landGroup = one("SELECT id, title, unit FROM stat_groups WHERE slug = 'penggunaan-lahan'");
@@ -41,9 +35,6 @@ function profile(): void
     ]);
 }
 
-/* ---------------------------------------------------------
- * INFORMASI DESA (A–H dalam grafik)
- * ------------------------------------------------------- */
 function information(): void
 {
     $sections = all('SELECT * FROM stat_sections ORDER BY sort, code');
@@ -72,7 +63,6 @@ function information(): void
     ]);
 }
 
-/** Ubah baris stat_items menjadi struktur label × seri untuk Chart.js */
 function chart_payload(array $group, array $items): array
 {
     $labels = [];
@@ -101,9 +91,6 @@ function chart_payload(array $group, array $items): array
     ];
 }
 
-/* ---------------------------------------------------------
- * GALERI
- * ------------------------------------------------------- */
 function gallery(): void
 {
     $cat = input('kategori');
@@ -174,9 +161,6 @@ function gallery_submit(): void
     redirect('/galeri');
 }
 
-/* ---------------------------------------------------------
- * JELAJAH DESA
- * ------------------------------------------------------- */
 function explore(): void
 {
     $cat = input('kategori');
@@ -224,16 +208,13 @@ function api_place(string $id): void
     json_out($p);
 }
 
-/* ---------------------------------------------------------
- * BERITA & KEGIATAN
- * ------------------------------------------------------- */
 function news(): void
 {
     $cat = input('kategori');
     $search = input('cari');
     $where = "status = 'Terbit'";
     $params = [];
-    if (in_array($cat, ['Berita', 'Kegiatan', 'Pengumuman'], true)) {
+    if (in_array($cat, ['Berita', 'Kegiatan', 'Organisasi'], true)) {
         $where .= ' AND category = :c';
         $params[':c'] = $cat;
     } else {
@@ -244,7 +225,7 @@ function news(): void
         $like = '%' . mb_substr($search, 0, 60) . '%';
         $params += [':q1' => $like, ':q2' => $like];
     }
-    // Berita utama: ditandai admin, atau berita terbaru bila tidak ada yang ditandai
+
     $featured = $search === '' ? one("SELECT * FROM news WHERE $where ORDER BY featured DESC, published_at DESC, id DESC LIMIT 1", $params) : null;
     $listWhere = $where;
     $listParams = $params;
@@ -286,9 +267,6 @@ function api_news(string $id): void
     ]);
 }
 
-/* ---------------------------------------------------------
- * LAPOR DESA
- * ------------------------------------------------------- */
 function report_form(): void
 {
     view('pages/report', [
@@ -376,9 +354,6 @@ function report_submit(): void
     redirect('/lapor#berhasil');
 }
 
-/* ---------------------------------------------------------
- * CEK STATUS LAPORAN
- * ------------------------------------------------------- */
 function report_status(): void
 {
     $ticket = strtoupper(trim(input('tiket')));
@@ -435,9 +410,6 @@ function report_status(): void
     ]);
 }
 
-/* ---------------------------------------------------------
- * KONTAK
- * ------------------------------------------------------- */
 function contact(): void
 {
     view('pages/contact', [
@@ -492,9 +464,6 @@ function contact_submit(): void
     redirect('/kontak#form-pesan');
 }
 
-/* ---------------------------------------------------------
- * MASUK / DAFTAR
- * ------------------------------------------------------- */
 function login_form(): void
 {
     if ($u = user()) {
@@ -599,9 +568,6 @@ function logout(): void
     redirect('/');
 }
 
-/* ---------------------------------------------------------
- * DATA PETA (JSON)
- * ------------------------------------------------------- */
 function api_map(): void
 {
     $regions = all('SELECT id, level, name, parent_name, color, leader, households, population, geojson FROM map_regions ORDER BY sort, id');
@@ -619,9 +585,6 @@ function api_map(): void
     ]);
 }
 
-/* ---------------------------------------------------------
- * GAMBAR
- * ------------------------------------------------------- */
 function media(string $id): void
 {
     $m = one('SELECT id, mime, size, data, created_at FROM media WHERE id = :id', [':id' => $id]);

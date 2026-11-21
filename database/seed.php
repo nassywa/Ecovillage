@@ -1,8 +1,4 @@
 <?php
-/**
- * Data contoh (dummy) Desa Marga Mulya, Kec. Pangkalan Banteng, Kab. Kotawaringin Barat, Kalimantan Tengah.
- * Seluruh angka bersifat fiktif dan disusun saling konsisten (mis. total penduduk = jumlah per kategori).
- */
 
 declare(strict_types=1);
 
@@ -19,7 +15,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
         return (int) $pdo->lastInsertId();
     };
 
-    // ---------- Gambar ilustrasi ----------
     $img = [];
     foreach (glob(__DIR__ . '/seed-media/*.{svg,jpg,jpeg,png,webp}', GLOB_BRACE) as $file) {
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
@@ -35,7 +30,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
     }
     $I = fn (string $k) => $img[$k] ?? null;
 
-    // ---------- Pengguna ----------
     $adminId = $ins('users', ['name' => 'Admin Desa Marga Mulya', 'email' => strtolower($adminEmail), 'phone' => '081234500001',
         'password_hash' => password_hash($adminPass, PASSWORD_DEFAULT), 'role' => 'admin']);
     $warga1 = $ins('users', ['name' => 'Rahmat Hidayat', 'email' => 'warga@margamulya.id', 'phone' => '081234500002',
@@ -43,7 +37,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
     $warga2 = $ins('users', ['name' => 'Nur Aini', 'email' => 'nuraini@contoh.id', 'phone' => '081234500003',
         'password_hash' => password_hash('warga12345', PASSWORD_DEFAULT), 'role' => 'warga']);
 
-    // ---------- Pengaturan ----------
     $settings = [
         'site_name' => 'Desa Marga Mulya',
         'village_name' => 'Desa Marga Mulya',
@@ -81,7 +74,7 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
         'lapor_intro' => 'Sampaikan keluhan atau aspirasi Anda. Setiap laporan mendapat nomor tiket untuk dipantau.',
         'footer_about' => 'Situs resmi Pemerintah Desa Marga Mulya: pusat informasi, pelayanan, dan aspirasi warga.',
         'admin_register_code' => 'MARGAMULYA-ADMIN-2026',
-        // Profil
+
         'profile_image' => (string) $I('gerbang'),
         'office_image' => (string) $I('kantor'),
         'profil_tentang' => 'Desa Marga Mulya adalah desa agraris di Kecamatan Pangkalan Banteng yang berkomitmen membangun masyarakat sejahtera dengan tetap menjaga kelestarian lingkungan. Sawah, kebun, aliran Sungai Kenanga, dan semangat gotong royong warganya menjadi kekuatan utama desa ini.',
@@ -102,13 +95,11 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
         $ins('settings', ['skey' => $k, 'svalue' => $v]);
     }
 
-    // ---------- Jam pelayanan ----------
     foreach (['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'] as $i => $day) {
         $closed = $i >= 5;
         $ins('office_hours', ['day' => $day, 'open_time' => $closed ? null : '08.00', 'close_time' => $closed ? null : '16.00', 'is_closed' => $closed ? 1 : 0, 'sort' => $i]);
     }
 
-    // ---------- Perangkat desa ----------
     $officials = [
         ['Budi Santoso', 'Kepala Desa', 1], ['Siti Aminah', 'Sekretaris Desa', 2],
         ['Ahmad Fadli', 'Kasi Pemerintahan', 3], ['Dewi Lestari', 'Kasi Pelayanan', 3], ['Rudi Hartono', 'Kasi Kesejahteraan', 3],
@@ -119,7 +110,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
         $ins('officials', ['name' => $n, 'position' => $p, 'tier' => $t, 'sort' => $i]);
     }
 
-    // ---------- Statistik A–H ----------
     $sections = [
         ['A', 'Pemerintahan Desa', 'landmark', 'Aparat, keamanan, fasilitas, lembaga, dan wilayah administrasi'],
         ['B', 'Kependudukan & Angkatan Kerja', 'users', 'Penduduk, umur, tenaga kerja, mata pencaharian, dan pendidikan warga'],
@@ -134,7 +124,7 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
     foreach ($sections as $i => [$code, $title, $icon, $desc]) {
         $sec[$code] = $ins('stat_sections', ['code' => $code, 'title' => $title, 'icon' => $icon, 'description' => $desc, 'sort' => $i]);
     }
-    // Kondisi Geografis: tampil di Profil Desa, tetap dikelola di CMS
+
     $sec['Z'] = $ins('stat_sections', ['code' => 'Z', 'title' => 'Kondisi Geografis', 'icon' => 'map', 'description' => 'Penggunaan lahan (tampil di Profil Desa)', 'sort' => 99]);
 
     $groupSort = 0;
@@ -152,13 +142,11 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
         }
     };
 
-    // Z. Geografis (total 3.500 ha)
     $group('Z', 'Luas wilayah menurut penggunaan', 'doughnut', 'ha', [
         'Pemukiman' => 240, 'Persawahan' => 580, 'Perkebunan' => 1950, 'Perkuburan' => 12, 'Pekarangan' => 380,
         'Taman' => 7, 'Perkantoran' => 9, 'Prasarana umum lainnya' => 322,
     ], 'Total 3.500 ha', 'penggunaan-lahan');
 
-    // A. Pemerintahan (8 set data)
     $group('A', 'Aparat desa & kecamatan menurut jenis kelamin', 'stacked', 'orang', [
         'Aparat Desa' => ['Laki-laki' => 8, 'Perempuan' => 4], 'Aparat Kecamatan' => ['Laki-laki' => 15, 'Perempuan' => 9],
     ]);
@@ -175,7 +163,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
     $group('A', 'Wilayah administrasi', 'cards', 'wilayah', ['Rukun Warga (RW)' => 3, 'Rukun Tetangga (RT)' => 12, 'Dusun' => 3]);
     $group('A', 'Lembaga kemasyarakatan desa', 'hbar', 'anggota', ['BPD' => 7, 'LPM' => 9, 'Tim Penggerak PKK' => 24, 'Karang Taruna' => 46, 'Kader Posyandu' => 30]);
 
-    // B. Kependudukan (7 set data, total 4.862 jiwa / 1.347 KK)
     $group('B', 'Ringkasan kependudukan', 'cards', 'jiwa', [
         'Jumlah penduduk' => 4862, 'Rumah tangga (KK)' => 1347, 'Pencari kerja terdaftar' => 142, 'Tenaga kerja usia 18–56 th' => 2786,
     ]);
@@ -200,11 +187,9 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
         '2026' => ['Pernikahan' => 38, 'Perceraian' => 2],
     ], 'Data 2026 sampai Oktober');
 
-    // C. Agama (2 set data, statistik netral)
     $group('C', 'Jumlah pemeluk agama', 'doughnut', 'jiwa', ['Islam' => 4256, 'Kristen Protestan' => 287, 'Katolik' => 191, 'Hindu' => 89, 'Buddha' => 39]);
     $group('C', 'Fasilitas ibadah', 'bar', 'unit', ['Masjid' => 5, 'Mushola' => 14, 'Gereja' => 3, 'Pura' => 1]);
 
-    // D. Pendidikan (6 set data)
     $group('D', 'Jumlah sekolah negeri & swasta per jenjang', 'stacked', 'sekolah', [
         'SD/MI' => ['Negeri' => 3, 'Swasta' => 1], 'SLTP/MTs' => ['Negeri' => 1, 'Swasta' => 1],
         'SLTA/SMK/MA' => ['Negeri' => 1, 'Swasta' => 1], 'Perguruan Tinggi' => ['Negeri' => 0, 'Swasta' => 0],
@@ -220,7 +205,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
     ]);
     $group('D', 'Peserta pendidikan kesetaraan', 'bar', 'peserta', ['Paket A' => 9, 'Paket B' => 21, 'Paket C' => 34]);
 
-    // E. Kesehatan (9 set data)
     $group('E', 'Fasilitas kesehatan', 'bar', 'unit', [
         'Rumah sakit' => 0, 'Puskesmas' => 0, 'Pustu' => 1, 'Praktik dokter' => 1, 'Praktik bidan' => 3, 'Posyandu' => 6, 'Apotek' => 2,
     ], 'Rumah sakit & puskesmas terdekat di pusat kecamatan');
@@ -233,7 +217,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
     $group('E', 'Bahan bakar memasak', 'pie', 'KK', ['LPG' => 1170, 'Kayu bakar' => 153, 'Minyak tanah' => 24]);
     $group('E', 'Program KB', 'bar', 'pasangan', ['Pasangan usia subur' => 873, 'Peserta KB aktif' => 679, 'Peserta KB baru 2026' => 78]);
 
-    // F. Pertanian & Peternakan (6 set data)
     $group('F', 'Luas sawah menurut jenis pengairan', 'doughnut', 'ha', ['Irigasi setengah teknis' => 136, 'Irigasi sederhana' => 180, 'Tadah hujan' => 264], 'Total 580 ha');
     $group('F', 'Luas panen', 'bar', 'ha', ['Padi' => 560, 'Jagung' => 96, 'Ketela' => 34, 'Sayuran' => 45, 'Buah-buahan' => 70]);
     $group('F', 'Produksi pertanian', 'bar', 'ton', ['Padi' => 2800, 'Jagung' => 528, 'Ketela' => 646, 'Sayuran' => 270, 'Buah-buahan' => 490]);
@@ -241,7 +224,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
     $group('F', 'Populasi ternak', 'bar', 'ekor', ['Sapi' => 684, 'Kambing' => 472, 'Domba' => 88, 'Kerbau' => 26]);
     $group('F', 'Populasi unggas', 'bar', 'ekor', ['Ayam ras' => 9800, 'Ayam kampung' => 5420, 'Puyuh' => 1800, 'Itik' => 1060]);
 
-    // G. Ekonomi (6 set data)
     $group('G', 'Industri menengah & besar', 'bar', 'unit', [
         'Makanan & minuman' => 1, 'Pengolahan kayu' => 1, 'Pengolahan hasil kebun' => 2, 'Tekstil' => 0, 'Kertas' => 0, 'Kimia' => 0, 'Logam' => 0,
     ]);
@@ -256,7 +238,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
     ], 'Realisasi 2026 sampai Oktober');
     $group('G', 'Penggunaan listrik rumah tangga', 'pie', 'KK', ['PLN' => 1292, 'Tenaga surya / genset' => 38, 'Belum berlistrik' => 17]);
 
-    // H. Infrastruktur (3 set data, total jalan 52,8 km)
     $group('H', 'Panjang & kondisi jalan', 'stacked', 'km', [
         'Jalan desa' => ['Baik' => 14.6, 'Sedang' => 9.3, 'Rusak' => 4.7],
         'Jalan antar desa' => ['Baik' => 7.2, 'Sedang' => 3.1, 'Rusak' => 1.8],
@@ -267,11 +248,9 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
     $group('H', 'Jenis permukaan jalan', 'doughnut', 'km', ['Aspal' => 21.4, 'Tanah' => 12.2, 'Makadam' => 10.3, 'Sirtu' => 5.6, 'Beton' => 3.3]);
     $group('H', 'Jembatan & sarana transportasi', 'cards', 'unit', ['Jembatan beton' => 6, 'Jembatan kayu' => 4, 'Dermaga sungai' => 1, 'Halte' => 2]);
 
-    // ---------- Peta wilayah (poligon ilustrasi, dipotong mengikuti batas desa) ----------
     $outer = [[-2.4430, 111.8950], [-2.4405, 111.9180], [-2.4470, 111.9390], [-2.4700, 111.9480], [-2.4930, 111.9330],
         [-2.5010, 111.9150], [-2.4880, 111.8990], [-2.4660, 111.8920]];
     $clip = function (array $subject) use ($outer): array {
-        // Sutherland–Hodgman: potong poligon $subject dengan poligon cembung $outer (koordinat [lat, lng])
         $inside = function ($p, $a, $b) {
             return (($b[1] - $a[1]) * ($p[0] - $a[0]) - ($b[0] - $a[0]) * ($p[1] - $a[1])) <= 0;
         };
@@ -286,7 +265,7 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
         };
         $output = $subject;
         $n = count($outer);
-        // tentukan orientasi supaya uji "inside" konsisten
+
         $area = 0;
         for ($i = 0; $i < $n; $i++) {
             $a = $outer[$i]; $b = $outer[($i + 1) % $n];
@@ -359,23 +338,21 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
         $ins('map_points', ['name' => $n, 'type' => $t, 'lat' => $la, 'lng' => $ln, 'description' => $d, 'sort' => $i]);
     }
 
-    // ---------- Sudut Istimewa / Jelajah Desa ----------
     $places = [
-        // Sudut Favorit Warga (Wisata unggulan)
         ['Sungai Kenanga', 'Wisata', 'Wisata Alam', 'Aliran sungai di batas selatan desa. Warga menyusuri sungai dengan perahu kayu, memancing, atau menikmati senja dari dermaga BUMDes.', 'Batas selatan desa', 'Sewa perahu Rp 10.000', '07.00–18.00', '0812 3450 1107', 'sungai', 1],
         ['Hamparan Persawahan', 'Wisata', 'Agrowisata', 'Sawah seluas 580 hektare yang menghijau sepanjang musim tanam. Tersedia paket belajar menanam dan memanen padi bersama petani.', 'RW 01 – RW 02', 'Gratis (paket edukasi Rp 25.000)', 'Setiap hari', '0812 3450 1108', 'sawah', 1],
         ['Perkebunan Desa', 'Wisata', 'Agrowisata', 'Kebun terluas di wilayah desa, mencakup 1.950 hektare. Pengunjung bisa berkeliling kebun buah dan belajar budidaya bersama kelompok tani.', 'RW 03', 'Gratis', '07.00–16.00', null, 'kebun', 1],
         ['Taman Desa', 'Wisata', 'Ruang Publik', 'Ruang santai untuk keluarga di dekat Kantor Desa, dengan area bermain anak, bangku taman, dan jalur jalan kaki yang teduh.', 'Dekat Kantor Desa', 'Gratis', '06.00–21.00', null, 'taman', 1],
         ['Bukit Pandang Senja', 'Wisata', 'Alam', 'Bukit kecil di sisi timur desa dengan pemandangan sawah dan kebun yang luas. Paling indah saat matahari terbenam.', 'RT 08 / RW 02', 'Gratis', 'Setiap hari', null, 'bukit', 0],
         ['Jalur Sepeda Lingkar Sawah', 'Wisata', 'Olahraga', 'Rute sepeda sepanjang 7 km mengelilingi sawah dan kebun. Ramai pesepeda setiap Minggu pagi.', 'Start di Balai Desa', 'Gratis', 'Minggu, 06.00–09.00', null, 'sepeda', 0],
-        // Produk Unggulan (UMKM unggulan)
+
         ['Beras Organik', 'UMKM', 'Pertanian', 'Beras organik hasil sawah kelompok Tani Maju yang ditanam tanpa pestisida kimia. Pulen, wangi, dan dikemas karung 5 kg dan 10 kg.', 'RT 03 / RW 01', 'Rp 15.000/kg', 'Setiap hari, 07.00–17.00', '0812 3450 1101', 'beras', 1],
         ['Anyaman Warga', 'UMKM', 'Kerajinan', 'Tas, tikar, dan keranjang dari rotan dan purun buatan kelompok perajin Anyaman Mulya. Sudah dipasarkan sampai Pangkalan Bun.', 'RT 02 / RW 01', 'Rp 45.000', '08.00–16.00', '0812 3450 1103', 'anyaman', 1],
         ['Hasil Kebun Segar', 'UMKM', 'Pertanian', 'Sayur dan buah segar langsung dari kebun warga: cabai, tomat, terong, pisang, dan buah musiman. Bisa pesan antar di dalam desa.', 'Galeri UMKM BUMDes', 'Rp 20.000/kg', '07.00–15.00', '0812 3450 1110', 'sayur', 1],
         ['Warung Sari Rasa', 'UMKM', 'Kuliner', 'Warung makan rumahan dengan menu nasi sayur, ikan bakar sungai, dan sambal khas Bu Sari. Favorit pekerja kebun saat makan siang.', 'RT 01 / RW 01', 'Rp 12.000–25.000', '07.00–20.00', '0812 3450 1102', 'warung', 0],
         ['Keripik Pisang Bu Rina', 'UMKM', 'Kuliner', 'Keripik pisang kepok renyah rasa original, manis, dan balado dari pisang kebun warga.', 'RT 06 / RW 02', 'Rp 10.000/bungkus', '08.00–17.00', '0812 3450 1104', 'keripik', 0],
         ['Madu Kelulut Marga Lestari', 'UMKM', 'Pertanian', 'Madu lebah kelulut yang dibudidayakan di pinggir hutan desa, dipanen langsung oleh peternak binaan BUMDes.', 'RT 10 / RW 03', 'Rp 85.000/botol', 'Pemesanan via WA', '0812 3450 1105', 'madu', 0],
-        // Budaya
+
         ['Festival Panen Raya', 'Budaya', 'Acara Tahunan', 'Perayaan syukur setelah panen padi setiap bulan Juni: pawai hasil bumi, lomba masak, bazar UMKM, dan pentas seni warga.', 'Lapangan Desa', 'Gratis', 'Setiap Juni', null, 'festival', 0],
         ['Sanggar Seni Karang Taruna', 'Budaya', 'Kesenian', 'Wadah anak muda belajar tari kreasi, musik, dan teater. Latihan rutin setiap Sabtu sore dan tampil di acara desa.', 'Balai Desa', 'Gratis', 'Sabtu, 15.00–17.00', '0812 3450 1109', 'sanggar', 0],
         ['Permainan Tradisional Anak', 'Budaya', 'Tradisi', 'Kegiatan rutin mengenalkan engklek, egrang, dan layang-layang kepada anak-anak.', 'Lapangan RW 02', 'Gratis', 'Minggu sore', null, 'permainan', 0],
@@ -386,13 +363,12 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
             'hours' => $hours, 'contact' => $contact, 'image_id' => $I($image), 'featured' => $feat, 'status' => 'Tampil']);
     }
 
-    // ---------- Berita & Kegiatan ----------
     $news = [
         ['Gotong Royong Bersihkan Lingkungan Desa', 'Berita', '2026-11-08', 'gotongroyong', 1,
             "Ratusan warga dari seluruh RT turun bersama membersihkan fasilitas umum dan lingkungan sekitar menjelang musim hujan. Kegiatan dimulai pukul 07.00 WIB dan selesai menjelang siang.\n\nSelain membersihkan saluran air, warga juga merapikan bahu jalan, memangkas ranting pohon yang membahayakan, dan mengumpulkan sampah plastik untuk bank sampah Karang Taruna.\n\nKepala Desa Budi Santoso berterima kasih kepada seluruh warga dan berharap kebiasaan Jumat Bersih terus terjaga."],
         ['Program Tanam Pohon untuk Desa Hijau', 'Kegiatan', '2026-11-10', 'tanampohon', 0,
             "Warga bersama perangkat desa menanam 1.200 bibit pohon di sepanjang jalan poros desa dan bantaran Sungai Kenanga. Bibit yang ditanam meliputi trembesi, mahoni, durian, dan petai.\n\nSetiap RT mendapat tanggung jawab merawat bibit di wilayahnya selama satu tahun.\n\nWarga yang ingin ikut mengadopsi pohon bisa mendaftar di Kantor Desa pada jam pelayanan."],
-        ['Jadwal dan Jam Pelayanan Kantor Desa', 'Pengumuman', '2026-11-06', 'pelayanan', 0,
+        ['Jadwal dan Jam Pelayanan Kantor Desa', 'Berita', '2026-11-06', 'pelayanan', 0,
             "Pelayanan administrasi di Kantor Desa Marga Mulya dibuka Senin sampai Jumat, pukul 08.00 sampai 16.00 WIB. Sabtu, Minggu, dan hari libur nasional kantor tutup.\n\nWarga yang membutuhkan surat keterangan diharapkan membawa KTP dan Kartu Keluarga asli. Untuk pengaduan di luar jam kerja, gunakan layanan LaporDesa di website ini.\n\nTerima kasih atas perhatiannya."],
         ['Pelatihan UMKM Digital untuk Warga', 'Berita', '2026-10-28', 'pelatihan', 0,
             "Pelaku usaha lokal belajar memasarkan produk lewat media sosial dan marketplace di Balai Desa. Sebanyak 35 peserta belajar memotret produk dengan ponsel dan menulis deskripsi yang menarik.\n\nPelatihan diselenggarakan BUMDes Marga Lestari bersama pendamping desa. Setiap peserta pulang dengan akun toko daring yang siap digunakan.\n\nPendampingan lanjutan dilakukan setiap bulan selama tiga bulan ke depan."],
@@ -400,19 +376,19 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
             "Seluruh RT ikut membersihkan saluran agar aman dari genangan. Lumpur dan sampah yang menyumbat drainase di RW 02 dan RW 03 berhasil diangkat.\n\nPemerintah desa menyediakan alat dan konsumsi, sementara warga bergotong royong sejak pagi.\n\nWarga diimbau tidak membuang sampah ke saluran air agar tidak terjadi banjir saat hujan deras."],
         ['Panen Raya Padi Musim Ini', 'Berita', '2026-10-12', 'panen', 0,
             "Hasil panen meningkat berkat perbaikan irigasi. Kelompok tani mencatat rata-rata 5 ton gabah kering panen per hektare.\n\nKenaikan hasil juga didukung penggunaan benih unggul dan pupuk organik buatan kelompok.\n\nSebagian hasil panen akan diolah menjadi beras organik kemasan oleh BUMDes."],
-        ['Pendataan Warga Tahun 2026', 'Pengumuman', '2026-10-03', 'pendataan', 0,
+        ['Pendataan Warga Tahun 2026', 'Berita', '2026-10-03', 'pendataan', 0,
             "Petugas akan mendatangi tiap rumah untuk pendataan warga tahun 2026. Mohon siapkan Kartu Keluarga dan KTP seluruh anggota keluarga.\n\nPendataan berlangsung mulai 5 sampai 30 Oktober 2026 dan dilakukan oleh kader yang membawa surat tugas dari Pemerintah Desa.\n\nData yang terkumpul dipakai untuk perencanaan program desa dan bantuan sosial yang tepat sasaran."],
         ['Festival Desa Marga Mulya 2026 Sukses Digelar', 'Berita', '2026-09-25', 'festival', 0,
             "Festival Desa Marga Mulya 2026 berlangsung meriah selama dua hari di Lapangan Desa, diisi pentas seni, lomba masak olahan pangan lokal, dan bazar 40 UMKM.\n\nProduk yang paling diminati adalah beras organik, madu kelulut, dan anyaman warga.\n\nFestival tahun depan direncanakan menghadirkan lebih banyak paket wisata Sungai Kenanga."],
-        ['Posyandu Balita Rutin Bulan November', 'Pengumuman', '2026-09-15', 'posyandu', 0,
+        ['Posyandu Balita Rutin Bulan November', 'Kegiatan', '2026-09-15', 'posyandu', 0,
             "Posyandu di enam titik kembali membuka layanan penimbangan, imunisasi, dan pemberian makanan tambahan pada minggu kedua setiap bulan.\n\nOrang tua diimbau membawa buku KIA.\n\nJadwal lengkap dapat ditanyakan ke kader posyandu di masing-masing RW."],
-        ['Musyawarah Desa Rencana Kerja 2027', 'Berita', '2026-08-25', 'rapat', 0,
+        ['Musyawarah Desa Rencana Kerja 2027', 'Organisasi', '2026-08-25', 'rapat', 0,
             "BPD bersama pemerintah desa menggelar musyawarah untuk menyusun Rencana Kerja Pemerintah Desa tahun 2027.\n\nUsulan prioritas warga antara lain perbaikan jalan desa di RW 02, penambahan lampu penerangan jalan, dan pengembangan wisata Sungai Kenanga.\n\nHasil musyawarah akan dibahas lebih lanjut dalam penyusunan APBDes 2027."],
         ['Jalan Usaha Tani Sepanjang 1,2 Km Selesai Dibeton', 'Berita', '2026-08-15', 'jalan', 0,
             "Jalan usaha tani di RW 03 sepanjang 1,2 km kini sudah dibeton dan menghubungkan permukiman dengan area perkebunan.\n\nSebelumnya jalan sulit dilewati kendaraan pengangkut hasil panen saat musim hujan.\n\nPembangunan dibiayai dana desa 2026 dan dikerjakan secara padat karya oleh warga setempat."],
-        ['PKK Gelar Lomba Pekarangan Hijau', 'Kegiatan', '2026-08-05', 'taman', 0,
+        ['PKK Gelar Lomba Pekarangan Hijau', 'Organisasi', '2026-08-05', 'taman', 0,
             "Tim Penggerak PKK menggelar lomba pekarangan hijau antar-RT. Penilaian meliputi tanaman obat keluarga, sayuran, kebersihan, dan pengolahan sampah rumah tangga.\n\nJuara pertama diraih RT 07 yang memanfaatkan pekarangan sempit dengan rak vertikal dan kolam ikan kecil.\n\nLomba ini menjadi bagian dari gerakan kemandirian pangan keluarga."],
-        ['Karang Taruna Bentuk Kepengurusan Baru', 'Kegiatan', '2026-07-20', 'sanggar', 0,
+        ['Karang Taruna Bentuk Kepengurusan Baru', 'Organisasi', '2026-07-20', 'sanggar', 0,
             "Karang Taruna Desa Marga Mulya membentuk kepengurusan baru periode 2026–2029 melalui musyawarah anggota di Balai Desa.\n\nPengurus baru menyiapkan tiga program utama: sanggar seni, bank sampah, dan pelatihan keterampilan digital bagi pemuda.\n\nPemuda desa yang ingin bergabung bisa menghubungi pengurus melalui media sosial Karang Taruna."],
     ];
     foreach ($news as [$t, $c, $d, $image, $feat, $content]) {
@@ -421,7 +397,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
             'content' => $content, 'image_id' => $I($image), 'author' => 'Admin Desa', 'published_at' => $d, 'status' => 'Terbit']);
     }
 
-    // ---------- Galeri ----------
     $gallery = [
         ['Gotong royong', 'Kegiatan', 'gotongroyong', 'Disetujui', null],
         ['Panen raya', 'Kegiatan', 'panen', 'Disetujui', null],
@@ -447,7 +422,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
             'sort' => 0, 'created_at' => date('Y-m-d H:i:s', strtotime('2026-11-12 -' . ($i * 3) . ' days'))]);
     }
 
-    // ---------- Kategori & laporan warga ----------
     $cats = [['Jalan Rusak', 'construction'], ['Sampah & Kebersihan', 'trash-2'], ['Lampu Jalan', 'lightbulb'], ['Air Bersih', 'droplets'],
         ['Drainase & Banjir', 'waves'], ['Fasilitas Umum', 'building-2'], ['Keamanan & Ketertiban', 'shield-alert'], ['Lainnya', 'circle-alert']];
     foreach ($cats as $i => [$n, $icon]) {
@@ -489,7 +463,6 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
         }
     }
 
-    // ---------- Pesan ----------
     $ins('messages', ['name' => 'Andi Pratama', 'email' => 'andi@contoh.id', 'phone' => null, 'subject' => 'Kunjungan studi banding',
         'message' => 'Selamat siang, kami dari kelompok tani desa tetangga ingin studi banding tentang beras organik. Kapan waktu yang tepat?', 'is_read' => 0]);
     $ins('messages', ['name' => 'Maya Sari', 'email' => null, 'phone' => '081377788899', 'subject' => 'Syarat surat domisili',

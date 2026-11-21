@@ -13,10 +13,6 @@ const ICON_CHOICES = [
     'lightbulb', 'circle-alert', 'waves', 'house', 'tractor', 'baby', 'briefcase', 'factory', 'wheat', 'fish',
 ];
 
-/**
- * Definisi entitas yang dikelola lewat CMS.
- * Setiap field: [label, tipe, opsi...]
- */
 function entities(): array
 {
     return [
@@ -27,12 +23,12 @@ function entities(): array
             'icon' => 'newspaper',
             'order' => 'published_at DESC, id DESC',
             'search' => ['title', 'content'],
-            'filters' => ['category' => ['Berita', 'Kegiatan', 'Pengumuman'], 'status' => ['Terbit', 'Draft']],
+            'filters' => ['category' => ['Berita', 'Kegiatan', 'Organisasi'], 'status' => ['Terbit', 'Draft']],
             'columns' => ['image_id' => 'Foto', 'title' => 'Judul', 'category' => 'Kategori', 'published_at' => 'Tanggal', 'featured' => 'Utama', 'status' => 'Status'],
             'fields' => [
                 'title' => ['label' => 'Judul', 'type' => 'text', 'required' => true, 'max' => 200],
-                'category' => ['label' => 'Kategori', 'type' => 'select', 'options' => ['Berita', 'Kegiatan', 'Pengumuman'], 'required' => true,
-                    'help' => 'Berita = kabar desa, Kegiatan = acara/aksi warga, Pengumuman = informasi resmi dari pemerintah desa.'],
+                'category' => ['label' => 'Kategori', 'type' => 'select', 'options' => ['Berita', 'Kegiatan', 'Organisasi'], 'required' => true,
+                    'help' => 'Berita = kabar dan informasi desa, Kegiatan = acara/aksi warga, Organisasi = kabar lembaga desa (BPD, PKK, Karang Taruna, kelompok tani, BUMDes).'],
                 'featured' => ['label' => 'Jadikan berita utama (tampil paling atas di halaman Berita)', 'type' => 'checkbox'],
                 'published_at' => ['label' => 'Tanggal terbit', 'type' => 'date', 'required' => true, 'default' => date('Y-m-d')],
                 'status' => ['label' => 'Status', 'type' => 'select', 'options' => ['Terbit', 'Draft'], 'default' => 'Terbit'],
@@ -398,7 +394,6 @@ function save(string $key, ?string $id = null): void
         redirect('/admin/kelola/' . $key . ($id ? '/' . $id : '/baru'));
     }
 
-    // Kolom turunan khusus tabel tertentu
     if ($ent['table'] === 'news') {
         if (empty($data['excerpt'])) {
             $data['excerpt'] = \App\excerpt($data['content'] ?? '', 180);
