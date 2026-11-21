@@ -1,9 +1,4 @@
 <?php
-/**
- * Instalasi database lewat terminal (alternatif dari halaman /setup).
- *   php database/install.php [email_admin] [password_admin]
- * Koneksi database dibaca dari file .env atau Environment Variables.
- */
 
 declare(strict_types=1);
 

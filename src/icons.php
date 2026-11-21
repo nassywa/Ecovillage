@@ -1,8 +1,4 @@
 <?php
-/**
- * Ikon SVG inline dari Lucide (lisensi ISC, https://lucide.dev) dan Simple Icons (CC0).
- * File ini dibuat otomatis. Tambahkan nama ikon Lucide baru bila diperlukan.
- */
 
 declare(strict_types=1);
 

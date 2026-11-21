@@ -9,7 +9,6 @@ use Throwable;
 function routes(): array
 {
     return [
-        // ----- Halaman publik (10 halaman) -----
         ['GET', '/', 'App\Pub\home'],
         ['GET', '/profil', 'App\Pub\profile'],
         ['GET', '/informasi', 'App\Pub\information'],
@@ -27,19 +26,15 @@ function routes(): array
         ['POST', '/daftar', 'App\Pub\register_submit'],
         ['POST', '/keluar', 'App\Pub\logout'],
 
-        // ----- Data JSON untuk modal / peta -----
         ['GET', '/api/berita/(\d+)', 'App\Pub\api_news'],
         ['GET', '/api/jelajah/(\d+)', 'App\Pub\api_place'],
         ['GET', '/api/peta', 'App\Pub\api_map'],
 
-        // ----- Gambar dari database -----
         ['GET', '/media/(\d+)', 'App\Pub\media'],
 
-        // ----- Instalasi database -----
         ['GET', '/setup', 'App\Setup\page'],
         ['POST', '/setup', 'App\Setup\run'],
 
-        // ----- CMS Admin -----
         ['GET', '/admin', 'App\Admin\dashboard'],
         ['GET', '/admin/pengaturan', 'App\Admin\settings_form'],
         ['POST', '/admin/pengaturan', 'App\Admin\settings_save'],
@@ -57,7 +52,6 @@ function routes(): array
         ['GET', '/admin/pengguna', 'App\Admin\users_index'],
         ['POST', '/admin/pengguna/(\d+)', 'App\Admin\user_action'],
 
-        // CRUD generik: berita, jelajah, galeri, perangkat, jam, wilayah, titik, kategori, seksi, grup
         ['GET', '/admin/kelola/([a-z-]+)', 'App\Crud\index'],
         ['GET', '/admin/kelola/([a-z-]+)/baru', 'App\Crud\form'],
         ['POST', '/admin/kelola/([a-z-]+)/baru', 'App\Crud\save'],
@@ -72,7 +66,6 @@ function run(): void
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
     $path = current_path();
 
-    // Halaman yang tidak butuh session (gambar & setup awal)
     $stateless = str_starts_with($path, '/media/') || $path === '/setup';
 
     try {

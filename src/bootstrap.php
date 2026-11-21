@@ -9,7 +9,6 @@ const ROOT = __DIR__ . '/..';
 date_default_timezone_set('Asia/Jakarta');
 mb_internal_encoding('UTF-8');
 
-// Muat .env lokal bila ada (di Vercel pakai Environment Variables)
 (function (): void {
     $envFile = ROOT . '/.env';
     if (!is_file($envFile)) {
