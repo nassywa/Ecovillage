@@ -55,3 +55,71 @@ CREATE TABLE IF NOT EXISTS admins (
 ) ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
+-- 4. Tabel profil desa
+CREATE TABLE IF NOT EXISTS village_profile (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    village_name VARCHAR(150) NOT NULL,
+    district VARCHAR(150) NULL,
+    regency VARCHAR(150) NULL,
+    province VARCHAR(150) NULL,
+    description TEXT NULL,
+    history TEXT NULL,
+    vision TEXT NULL,
+    mission TEXT NULL,
+    geographic_info TEXT NULL,
+    village_address TEXT NULL,
+    village_logo VARCHAR(255) NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+-- 5. Tabel informasi desa
+CREATE TABLE IF NOT EXISTS village_information (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    category VARCHAR(100) NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    value VARCHAR(255) NULL,
+    unit VARCHAR(50) NULL,
+    description TEXT NULL,
+    image VARCHAR(255) NULL,
+    reference_year YEAR NULL,
+    status ENUM('Draft', 'Published') NOT NULL DEFAULT 'Draft',
+    display_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+-- 6. Tabel galeri desa
+CREATE TABLE IF NOT EXISTS village_gallery (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    description TEXT NULL,
+    category VARCHAR(100) NULL,
+    image VARCHAR(255) NOT NULL,
+    status ENUM('Draft', 'Published') NOT NULL DEFAULT 'Draft',
+    display_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+-- 7. Tabel kontak desa
+CREATE TABLE IF NOT EXISTS village_contact (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    phone VARCHAR(30) NULL,
+    email VARCHAR(150) NULL,
+    village_address TEXT NULL,
+    office_hours VARCHAR(150) NULL,
+    website VARCHAR(255) NULL,
+    instagram VARCHAR(255) NULL,
+    facebook VARCHAR(255) NULL,
+    map_url TEXT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
