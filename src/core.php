@@ -49,29 +49,57 @@ function db(): PDO
     ];
 
     if (in_array(strtolower((string) env('DB_SSL', 'false')), ['1', 'true', 'yes', 'required'], true)) {
-        $ca = env('DB_SSL_CA');
-        if ($ca && str_contains($ca, 'BEGIN CERTIFICATE')) {
-            $caFile = sys_get_temp_dir() . '/db-ca-' . md5($ca) . '.pem';
-            if (!is_file($caFile)) {
-                file_put_contents($caFile, str_replace('\n', "\n", $ca));
-            }
-            $options[PDO::MYSQL_ATTR_SSL_CA] = $caFile;
-            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = true;
-        } else {
-            foreach (['/etc/pki/tls/certs/ca-bundle.crt', '/etc/ssl/certs/ca-certificates.crt', '/etc/ssl/cert.pem'] as $bundle) {
-                if (is_file($bundle)) {
-                    $options[PDO::MYSQL_ATTR_SSL_CA] = $bundle;
-                    break;
-                }
-            }
-            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
-        }
+        $options += db_ssl_options();
     }
 
     $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
-    $pdo = new PDO($dsn, $user, $pass, $options);
+    try {
+        $pdo = new PDO($dsn, $user, $pass, $options);
+    } catch (PDOException) {
+        // Do not expose a DSN, username, host, or password through application errors.
+        throw new \RuntimeException('Koneksi database gagal.');
+    }
     $pdo->exec("SET time_zone = '+07:00'");
     return $pdo;
+}
+
+/** @return array<int, mixed> */
+function db_ssl_options(): array
+{
+    $configured = env('DB_SSL_CA');
+    if (!$configured) {
+        throw new \RuntimeException('DB_SSL_CA wajib diatur saat DB_SSL aktif.');
+    }
+
+    $caFile = $configured;
+    $caContents = is_file($configured) ? @file_get_contents($configured) : str_replace('\\n', "\n", $configured);
+    if ($caContents === false || trim($caContents) === '') {
+        throw new \RuntimeException('DB_SSL_CA tidak valid.');
+    }
+
+    $certificate = null;
+    if (preg_match('/-----BEGIN CERTIFICATE-----.+?-----END CERTIFICATE-----/s', $caContents, $matches) === 1) {
+        $certificate = $matches[0];
+    }
+    if ($certificate === null || openssl_x509_read($certificate) === false) {
+        throw new \RuntimeException('DB_SSL_CA tidak valid.');
+    }
+
+    if (!is_file($configured)) {
+        $caFile = sys_get_temp_dir() . '/ecovillage-db-ca-' . hash('sha256', $caContents) . '.pem';
+        if (!is_file($caFile) && @file_put_contents($caFile, $caContents, LOCK_EX) === false) {
+            throw new \RuntimeException('DB_SSL_CA tidak dapat disiapkan.');
+        }
+        @chmod($caFile, 0600);
+    }
+    if (!is_readable($caFile)) {
+        throw new \RuntimeException('DB_SSL_CA tidak dapat dibaca.');
+    }
+
+    return [
+        PDO::MYSQL_ATTR_SSL_CA => $caFile,
+        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
+    ];
 }
 
 function q(string $sql, array $params = []): \PDOStatement

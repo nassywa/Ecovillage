@@ -7,7 +7,7 @@
 <main class="container" style="max-width:560px;padding:40px 18px">
     <div class="card">
         <h1 style="font-size:1.5rem">Instalasi Database EcoVillage</h1>
-        <p class="muted">Halaman ini membuat seluruh tabel dan mengisi data contoh Desa Marga Mulya. <strong>Semua data lama akan dihapus.</strong></p>
+        <p class="muted">Halaman ini membuat tabel dan mengisi data contoh Desa Marga Mulya pada database kosong. Database yang sudah berisi tabel akan ditolak demi menjaga data lama.</p>
         <?php if ($message): ?>
             <div class="alert alert--<?= $ok ? 'success' : 'error' ?>"><span><?= e($message) ?></span></div>
         <?php endif; ?>

@@ -45,58 +45,26 @@ assets/              ← CSS, JS, font, ikon, library (Chart.js, Leaflet)
 database/schema.sql  ← struktur tabel MySQL
 database/seed.php    ← data contoh Desa Marga Mulya
 database/ecovillage.sql ← dump MySQL siap impor (skema + data contoh)
-vercel.json          ← konfigurasi Vercel + runtime vercel-php (PHP 8.3)
+vercel.json          ← konfigurasi Vercel Container runtime
+Dockerfile.vercel    ← image FrankenPHP untuk Vercel
+Caddyfile            ← web server container dan routing front controller
 ```
 
 ## Kenapa ada penyesuaian khusus Vercel?
-Vercel menjalankan PHP sebagai *serverless function* (runtime komunitas `vercel-php@0.7.4`, PHP 8.3) yang **tidak punya disk tetap** dan **tidak menyediakan MySQL**. Karena itu:
+Vercel menjalankan PHP sebagai Container Function melalui FrankenPHP. Container tidak memiliki disk permanen dan Vercel tidak menyediakan MySQL di dalam aplikasi. Karena itu:
 - **Session login disimpan di tabel `sessions`** (bukan file).
 - **Foto disimpan di tabel `media`** (bukan folder `uploads/`), lalu ditampilkan lewat `/media/{id}` dengan cache.
 - **Database MySQL di-hosting terpisah** dan dihubungkan lewat Environment Variables.
 
+Penyimpanan BLOB pada database eksternal adalah storage permanen yang digunakan saat ini. Filesystem container hanya untuk runtime; jangan menyimpan upload ke folder lokal.
+
+Untuk database hasil migrasi legacy, lihat [database/migrations/README.md](database/migrations/README.md). Jangan menjalankan `/setup` pada database lama.
+
 ---
 
-## Deploy ke Vercel (langkah demi langkah)
+## Deploy ke Vercel
 
-### 1. Siapkan database MySQL online (gratis: Clever Cloud MySQL DEV)
-1. Login ke https://console.clever-cloud.com → **Create** → **an add-on** → **MySQL** → pilih paket **DEV** (gratis).
-2. Buka add-on tersebut → tab **Information / Environment variables**, catat `MYSQL_ADDON_HOST`, `MYSQL_ADDON_PORT`, `MYSQL_ADDON_DB`, `MYSQL_ADDON_USER`, `MYSQL_ADDON_PASSWORD`.
-3. Isi nilai tersebut ke `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS` di Vercel. `DB_SSL` biarkan `false`.
-
-> Paket DEV gratis berkapasitas kecil (sekitar 10 MB) dan khusus testing. Foto otomatis dikompres di browser dan session kosong tidak disimpan supaya hemat. Untuk produksi, gunakan paket MySQL berbayar.
-
-### 2. Upload kode ke GitHub
-Buat repository baru, lalu upload seluruh isi folder ini (file `.env` jangan ikut).
-
-### 3. Import project di Vercel
-1. Buka https://vercel.com/new → pilih repository.
-2. **Framework Preset: Other**. Build Command & Output Directory dikosongkan.
-3. Buka **Environment Variables**, isi:
-
-| Nama | Contoh |
-|------|--------|
-| `DB_HOST` | `mysql-xxxx.example.com` |
-| `DB_PORT` | `3306` |
-| `DB_NAME` | `ecovillage` |
-| `DB_USER` | `ecouser` |
-| `DB_PASS` | `********` |
-| `DB_SSL` | `true` (untuk MySQL cloud) |
-| `SETUP_KEY` | teks acak, mis. `mm-setup-8f3k2` |
-
-4. Klik **Deploy**.
-
-### 4. Instal database
-Pilih salah satu:
-- **Lewat website:** buka `https://NAMA-PROJECT.vercel.app/setup`, isi `SETUP_KEY`, email dan kata sandi admin → **Instal database**.
-- **Lewat file SQL:** impor `database/ecovillage.sql` ke database (DBeaver / MySQL Workbench / `mysql < database/ecovillage.sql`). Admin default: `admin@margamulya.id` / `admin12345` — **segera ganti** dengan mendaftar admin baru lalu hapus akun default.
-
-Setelah instalasi, **hapus atau ganti `SETUP_KEY`** di Vercel lalu redeploy.
-
-### 5. Selesai
-- Website: `https://NAMA-PROJECT.vercel.app`
-- CMS: `https://NAMA-PROJECT.vercel.app/admin`
-- Akun demo warga: `warga@margamulya.id` / `warga12345`
-- Kode daftar admin (bisa diubah di CMS → Beranda & Kontak → Keamanan): `MARGAMULYA-ADMIN-2026`
+Ikuti [DEPLOYMENT.md](DEPLOYMENT.md). Dokumen tersebut membedakan deployment baru dengan database lama hasil migrasi dan melarang penggunaan `/setup` pada database lama.
 
 ---
 
@@ -105,9 +73,10 @@ Butuh PHP 8.2+ (ekstensi `pdo_mysql`, `fileinfo`) dan MySQL 8 / MariaDB 10.6+.
 
 ```bash
 cp .env.example .env        # isi koneksi database lokal
-php database/install.php admin@margamulya.id admin12345
 php -S localhost:8000 api/index.php
 ```
+
+Untuk database lokal kosong, jalankan `php database/install.php ADMIN_EMAIL ADMIN_PASSWORD` setelah memastikan backup dan target database benar. Jangan menjalankan installer atau `database/schema.sql` terhadap database lama.
 Buka http://localhost:8000
 
 ---

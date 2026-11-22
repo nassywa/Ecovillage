@@ -1,2 +1,7 @@
 .env
 .git
+database/ecovillage.sql
+database/migrations
+uploads
+config
+test_connection.php

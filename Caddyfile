@@ -1,0 +1,20 @@
+:{$PORT:80} {
+    root * /app
+
+    @assets path /assets/*
+    handle @assets {
+        header Cache-Control "public, max-age=86400"
+        file_server
+    }
+
+    # Keep public JSON routes under /api reachable; block only implementation files.
+    @blocked path /src/* /database/* /api/index.php /api/php.ini /.env* /README.md /composer.json /Dockerfile.vercel /Caddyfile
+    handle @blocked {
+        respond 404
+    }
+
+    handle {
+        rewrite * /api/index.php
+        php_server
+    }
+}

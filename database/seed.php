@@ -6,7 +6,7 @@ namespace Database;
 
 use PDO;
 
-function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $adminPass = 'admin12345'): void
+function seed(PDO $pdo, string $adminEmail, string $adminPass): void
 {
     $ins = function (string $table, array $row) use ($pdo): int {
         $cols = array_keys($row);
@@ -32,10 +32,15 @@ function seed(PDO $pdo, string $adminEmail = 'admin@margamulya.id', string $admi
 
     $adminId = $ins('users', ['name' => 'Admin Desa Marga Mulya', 'email' => strtolower($adminEmail), 'phone' => '081234500001',
         'password_hash' => password_hash($adminPass, PASSWORD_DEFAULT), 'role' => 'admin']);
+    // Seed accounts need stable IDs for fixture relations, but must not ship
+    // with a documented/default password. Their random hashes are sufficient
+    // for fixture data; create real warga credentials through registration.
+    $wargaHash1 = password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT);
+    $wargaHash2 = password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT);
     $warga1 = $ins('users', ['name' => 'Rahmat Hidayat', 'email' => 'warga@margamulya.id', 'phone' => '081234500002',
-        'password_hash' => password_hash('warga12345', PASSWORD_DEFAULT), 'role' => 'warga']);
+        'password_hash' => $wargaHash1, 'role' => 'warga']);
     $warga2 = $ins('users', ['name' => 'Nur Aini', 'email' => 'nuraini@contoh.id', 'phone' => '081234500003',
-        'password_hash' => password_hash('warga12345', PASSWORD_DEFAULT), 'role' => 'warga']);
+        'password_hash' => $wargaHash2, 'role' => 'warga']);
 
     $settings = [
         'site_name' => 'Desa Marga Mulya',

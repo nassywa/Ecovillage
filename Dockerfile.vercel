@@ -1,0 +1,21 @@
+FROM dunglas/frankenphp:1-php8.4-alpine
+
+WORKDIR /app
+
+RUN install-php-extensions pdo_mysql mbstring
+RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY api ./api
+COPY src ./src
+COPY assets ./assets
+# Runtime setup only needs the fresh schema and its seed assets. Keep legacy
+# dumps and migration scripts out of the deployed image.
+COPY database/schema.sql ./database/schema.sql
+COPY database/seed.php ./database/seed.php
+COPY database/seed-media ./database/seed-media
+COPY .env.example ./
+
+ENV PORT=80
+
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]

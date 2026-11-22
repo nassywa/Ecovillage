@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+.vercel
+.vscode
+config
+test_connection.php
+database/ecovillage.sql
+database/migrations
+uploads
+README.md
+DEPLOYMENT.md

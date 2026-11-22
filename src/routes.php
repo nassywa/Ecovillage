@@ -66,6 +66,8 @@ function run(): void
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
     $path = current_path();
 
+    // Media and first-install setup do not have a database-backed session yet.
+    // Setup is protected by the secret SETUP_KEY and an empty-database guard.
     $stateless = str_starts_with($path, '/media/') || $path === '/setup';
 
     try {

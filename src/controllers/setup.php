@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Setup;
 
 use Throwable;
-use function App\{env, db, render, e};
+use function App\{env, db, render};
 
 function page(): void
 {
@@ -36,13 +36,27 @@ function run(): void
         echo render('pages/setup', ['message' => 'Instalasi selesai. Database sudah berisi data contoh Desa Marga Mulya.', 'ok' => true, 'enabled' => true]);
     } catch (Throwable $ex) {
         error_log('[SETUP] ' . $ex->getMessage());
-        echo render('pages/setup', ['message' => 'Instalasi gagal: ' . $ex->getMessage(), 'ok' => false, 'enabled' => true]);
+        http_response_code(500);
+        echo render('pages/setup', ['message' => 'Instalasi gagal. Periksa log server dan pastikan target database memang kosong.', 'ok' => false, 'enabled' => true]);
     }
 }
 
 function install(\PDO $pdo, string $adminEmail, string $adminPass): void
 {
+    // schema.sql is a fresh-install script and intentionally contains DROP statements.
+    // Refuse non-empty databases so a leaked/reused setup key cannot wipe data.
+    $existing = $pdo->query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME IN (
+        'media', 'settings', 'sessions', 'users', 'reports', 'report_updates',
+        'admins', 'village_contact', 'village_gallery', 'village_information', 'village_profile'
+    ) LIMIT 1")->fetchColumn();
+    if ($existing !== false) {
+        throw new \RuntimeException('Database tidak kosong (tabel ' . $existing . ' ditemukan). Gunakan migrasi terpisah; installer ditolak.');
+    }
+
     $sql = file_get_contents(\App\ROOT . '/database/schema.sql');
+    if ($sql === false) {
+        throw new \RuntimeException('File schema database tidak ditemukan.');
+    }
 
     $sql = preg_replace('/^\s*--.*$/m', '', $sql);
     foreach (array_filter(array_map('trim', explode(';', $sql))) as $stmt) {

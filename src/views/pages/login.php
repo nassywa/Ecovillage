@@ -40,7 +40,7 @@ $r = old('role', $role);
                 </div>
                 <button class="btn btn--block btn--pill" type="submit" style="min-height:48px">Masuk</button>
                 <p class="small center" style="margin:12px 0 0">Belum punya akun? <a href="#" data-tab-link="daftar"><strong>Daftar sekarang</strong></a></p>
-                <p class="help center" style="margin-top:6px">Akun demo warga: warga@margamulya.id / warga12345</p>
+                <p class="help center" style="margin-top:6px">Belum memiliki akun? Gunakan formulir pendaftaran di samping.</p>
             </form>
 
             <form method="post" action="/daftar" data-tab-panel="daftar" <?= $tab === 'daftar' ? '' : 'hidden' ?>>
