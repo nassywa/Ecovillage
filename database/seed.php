@@ -16,7 +16,7 @@ function seed(PDO $pdo, string $adminEmail, string $adminPass): void
     };
 
     $img = [];
-    foreach (glob(__DIR__ . '/seed-media/*.{svg,jpg,jpeg,png,webp}', GLOB_BRACE) as $file) {
+    foreach (glob(__DIR__ . '/seed-media/*') ?: [] as $file) {
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
         $mime = ['svg' => 'image/svg+xml', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp'][$ext];
         $data = file_get_contents($file);
